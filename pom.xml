@@ -15,10 +15,11 @@
     <modules>
         <module>generator</module>
         <module>io</module>
+		<module>pathfinder</module>
         <module>visualizer</module>
 		<module>mesh</module>
 		<module>island</module>
-	</modules>
+    </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
