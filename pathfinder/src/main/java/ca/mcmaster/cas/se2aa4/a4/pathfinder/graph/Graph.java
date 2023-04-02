@@ -101,6 +101,14 @@ public interface Graph<T> {
 
     /**
      *
+     * @param t1 The source node of the edge to set weight of
+     * @param t2 The target node of the edge to set weight of
+     * @param weight The weight of the edge
+     */
+    void setEdgeWeight(T t1, T t2, double weight);
+
+    /**
+     *
      * @param edge The {@link Edge} to get weight of
      * @return The weight of the given edge
      */

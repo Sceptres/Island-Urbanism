@@ -62,4 +62,14 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
         boolean t2Contains = t2Edges.stream().anyMatch(e -> t1.equals(e.getTargetNode()));
         return t1Contains && t2Contains;
     }
+
+    @Override
+    public void setEdgeWeight(Edge edge, double weight) {
+        super.setEdgeWeight(edge, weight);
+
+        T t1 = this.getEdgeSourceNode(edge);
+        T t2 = this.getEdgeTargetNode(edge);
+        Edge edge1 = this.getEdge(t2, t1);
+        super.setEdgeWeight(edge1, weight);
+    }
 }
