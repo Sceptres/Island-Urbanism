@@ -157,6 +157,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
+    public void setEdgeWeight(T t1, T t2, double weight) {
+        Edge edge = this.getEdge(t1, t2);
+        this.setEdgeWeight(edge, weight);
+    }
+
+    @Override
     public double getEdgeWeight(Edge edge) {
         if(!this.getEdges().contains(edge)) {
             String message = String.format("The edge %s does not exist in this graph!", edge);
