@@ -22,6 +22,10 @@ public class ShortestPath<T> extends AbstractPathAlgorithm<T> {
         finalPathReversed.add(node);
 
         while(node != start) {
+            if(Objects.isNull(node)) {
+                return List.of();
+            }
+
             node = paths.get(node);
             finalPathReversed.add(node);
         }
