@@ -248,8 +248,19 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         builder.append("{\n");
 
         for(T t : this.graph.keySet()) {
-            String str = String.format("\t%s => %s", t, this.graph.get(t));
-            builder.append(str).append("\n");
+            builder.append(String.format("\t%s => [", t));
+
+            Set<Edge> edges = this.graph.get(t);
+
+            for(Edge edge : edges) {
+                builder.append(String.format("(%s):", edge));
+                builder.append(String.format("%.2f", this.getEdgeWeight(edge)));
+                builder.append(", ");
+            }
+
+            builder.deleteCharAt(builder.length()-1);
+            builder.deleteCharAt(builder.length()-1);
+            builder.append("]\n");
         }
 
         builder.append("}");
