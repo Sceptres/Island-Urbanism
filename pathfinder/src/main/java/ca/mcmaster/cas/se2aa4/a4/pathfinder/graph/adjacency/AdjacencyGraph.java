@@ -1,10 +1,8 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges.DefaultEdge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.Graph;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -20,16 +18,14 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     protected int numEdges;
     protected final boolean isWeighted;
     protected final Class<T> dataClass;
-    protected final Class<? extends Edge> edgeClass;
     protected final Map<T, Set<Edge>> graph;
     protected final Map<Edge, Double> weightMap;
 
-    protected AdjacencyGraph(Class<T> dataClass, Class<? extends Edge> edgeClass, boolean isWeighted) {
+    protected AdjacencyGraph(Class<T> dataClass, boolean isWeighted) {
         this.numNodes = 0;
         this.numEdges = 0;
         this.isWeighted = isWeighted;
         this.dataClass = Objects.requireNonNull(dataClass);
-        this.edgeClass = Objects.requireNonNull(edgeClass);
         this.graph = new HashMap<>();
         this.weightMap = new HashMap<>();
     }
@@ -116,7 +112,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         }
 
         if(!this.hasEdge(t1, t2)) {
-            Edge edge = this.createEdge(t1, t2);
+            Edge edge = Edge.of(t1, t2);
             Set<Edge> t1Edges = this.graph.get(t1);
             t1Edges.add(edge);
             this.weightMap.put(edge, 1d);
@@ -134,20 +130,6 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     @Override
     public void addAllEdges(Collection<? extends Edge> edges) {
         edges.forEach(this::addEdge);
-    }
-
-    /**
-     *
-     * @param t1 The source node of the edge
-     * @param t2 The target node of the edge
-     * @return The {@link Edge} that was generated with t1 as the source and t2 as the target
-     */
-    protected Edge createEdge(T t1, T t2) {
-        try {
-            return this.edgeClass.getConstructor(Object.class, Object.class).newInstance(t1, t2);
-        } catch(NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalArgumentException("Unable to create edge!");
-        }
     }
 
     @Override
@@ -180,7 +162,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void removeEdge(T t1, T t2) {
-        if(!this.getEdges().contains(new DefaultEdge(t1, t2))) {
+        if(!this.getEdges().contains(Edge.of(t1, t2))) {
             String message = String.format("Nodes %s and %s do not exist in the graph!", t1, t2);
             throw new IllegalArgumentException(message);
         }
@@ -266,8 +248,19 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         builder.append("{\n");
 
         for(T t : this.graph.keySet()) {
-            String str = String.format("\t%s => %s", t, this.graph.get(t));
-            builder.append(str).append("\n");
+            builder.append(String.format("\t%s => [", t));
+
+            Set<Edge> edges = this.graph.get(t);
+
+            for(Edge edge : edges) {
+                builder.append(String.format("(%s):", edge));
+                builder.append(String.format("%.2f", this.getEdgeWeight(edge)));
+                builder.append(", ");
+            }
+
+            builder.deleteCharAt(builder.length()-1);
+            builder.deleteCharAt(builder.length()-1);
+            builder.append("]\n");
         }
 
         builder.append("}");

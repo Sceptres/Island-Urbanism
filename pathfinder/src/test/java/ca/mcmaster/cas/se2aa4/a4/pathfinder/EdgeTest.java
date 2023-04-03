@@ -1,7 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges.DefaultEdge;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.annotation.Testable;
 
@@ -16,7 +15,7 @@ public class EdgeTest {
         String n1 = "test1";
         String n2 = "test2";
 
-        edge = new DefaultEdge(n1, n2);
+        edge = Edge.of(n1, n2);
 
         assertEquals(n1, edge.getSourceNode());
         assertEquals(n2, edge.getTargetNode());

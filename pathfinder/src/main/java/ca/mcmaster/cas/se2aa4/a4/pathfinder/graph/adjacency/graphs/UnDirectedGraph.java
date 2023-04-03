@@ -1,7 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.graphs;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges.DefaultEdge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.AdjacencyGraph;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
     }
 
     public UnDirectedGraph(Class<T> dataClass, boolean isWeighted) {
-        super(dataClass, DefaultEdge.class, isWeighted);
+        super(dataClass, isWeighted);
     }
 
     @Override
@@ -37,10 +36,10 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
 
     @Override
     protected void specificRemoveEdge(T t1, T t2) {
-        Set<Edge> t1Edges = this.graph.get(t1);
-        Set<Edge> t2Edges = this.graph.get(t2);
-        Edge t1EdgeRemove = new DefaultEdge(t1, t2);
-        Edge t2EdgeRemove = new DefaultEdge(t2, t1);
+        Set<Edge> t1Edges = super.graph.get(t1);
+        Set<Edge> t2Edges = super.graph.get(t2);
+        Edge t1EdgeRemove = Edge.of(t1, t2);
+        Edge t2EdgeRemove = Edge.of(t2, t1);
         super.weightMap.remove(t1EdgeRemove);
         super.weightMap.remove(t2EdgeRemove);
         t1Edges.remove(t1EdgeRemove);
@@ -56,8 +55,8 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
 
     @Override
     protected boolean checkEdges(T t1, T t2) {
-        Set<Edge> t1Edges = this.graph.get(t1);
-        Set<Edge> t2Edges = this.graph.get(t2);
+        Set<Edge> t1Edges = super.graph.get(t1);
+        Set<Edge> t2Edges = super.graph.get(t2);
         boolean t1Contains = t1Edges.stream().anyMatch(e -> t2.equals(e.getTargetNode()));
         boolean t2Contains = t2Edges.stream().anyMatch(e -> t1.equals(e.getTargetNode()));
         return t1Contains && t2Contains;
@@ -67,9 +66,9 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
     public void setEdgeWeight(Edge edge, double weight) {
         super.setEdgeWeight(edge, weight);
 
-        T t1 = this.getEdgeSourceNode(edge);
-        T t2 = this.getEdgeTargetNode(edge);
-        Edge edge1 = this.getEdge(t2, t1);
+        T t1 = super.getEdgeSourceNode(edge);
+        T t2 = super.getEdgeTargetNode(edge);
+        Edge edge1 = super.getEdge(t2, t1);
         super.setEdgeWeight(edge1, weight);
     }
 }
