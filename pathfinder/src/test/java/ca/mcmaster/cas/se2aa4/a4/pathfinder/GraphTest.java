@@ -1,7 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges.DefaultEdge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.Graph;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.graphs.DirectedGraph;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,7 +106,7 @@ public class GraphTest {
         this.graph.addNode(1);
         this.graph.addNode(2);
 
-        Edge edge = new DefaultEdge(1, 2);
+        Edge edge = Edge.of(1, 2);
         this.graph.addEdge(edge);
 
         double edgeWeight = this.graph.getEdgeWeight(edge);

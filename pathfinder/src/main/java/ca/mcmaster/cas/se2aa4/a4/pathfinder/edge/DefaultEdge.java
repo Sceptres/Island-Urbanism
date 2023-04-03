@@ -1,14 +1,12 @@
-package ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges;
-
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
+package ca.mcmaster.cas.se2aa4.a4.pathfinder.edge;
 
 import java.util.Objects;
 
-public class DefaultEdge implements Edge {
+class DefaultEdge implements Edge {
     private final Object source;
     private final Object target;
 
-    public DefaultEdge(Object source, Object target) {
+    DefaultEdge(Object source, Object target) {
         this.source = source;
         this.target = target;
     }

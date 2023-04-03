@@ -1,7 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.graphs;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
-import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.edges.DefaultEdge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.AdjacencyGraph;
 
 import java.util.ArrayList;
@@ -15,12 +14,12 @@ public class DirectedGraph<T> extends AdjacencyGraph<T> {
     }
 
     public DirectedGraph(Class<T> dataClass, boolean isWeighted) {
-        super(dataClass, DefaultEdge.class, isWeighted);
+        super(dataClass, isWeighted);
     }
 
     @Override
     protected void specificRemoveEdge(T t1, T t2) {
-        Edge edge = new DefaultEdge(t1, t2);
+        Edge edge = Edge.of(t1, t2);
         Set<Edge> edges = super.graph.get(t1);
         super.weightMap.remove(edge);
         edges.remove(edge);
