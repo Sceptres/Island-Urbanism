@@ -2,7 +2,7 @@ package ca.mcmaster.cas.se2aa4.a2.island.path;
 
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.IElevation;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.ElevationHandler;
-import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.handlers.PathElevationHandler;
+import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.handlers.LowerElevationHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.profiles.ElevationProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segment;
@@ -21,7 +21,7 @@ public final class Path implements IElevation {
         this.setType(PathType.NONE);
         this.setWidth(1f);
         this.elevationProfile = new ElevationProfile();
-        this.elevationHandler = new PathElevationHandler();
+        this.elevationHandler = new LowerElevationHandler();
 
         this.elevationProfile.setElevation(1);
     }
