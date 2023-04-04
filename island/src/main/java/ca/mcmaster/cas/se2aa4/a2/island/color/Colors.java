@@ -1,11 +1,16 @@
-package ca.mcmaster.cas.se2aa4.a2.island.tile;
+package ca.mcmaster.cas.se2aa4.a2.island.color;
 
-import java.awt.Color;
+import java.awt.*;
 
-/**
- * This class stores the colors of the tiles
- */
-public class TileColors {
+public class Colors {
+    /**
+     * Generic colors
+     */
+    public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+
+    /**
+     * All tile colors
+     */
     public static final Color OCEAN = new Color(5,64,96);
 
     public static final Color SUBTROPICAL_DESERT = new Color(249,148,24);
@@ -29,4 +34,9 @@ public class TileColors {
     public static final Color REGULAR = new Color(255,255,255);
 
     public static final Color LAND_WATER = new Color(4,100,151);
+
+    /**
+     * Path colors
+     */
+    public static final Color RIVER_COLOR = Colors.LAND_WATER;
 }
