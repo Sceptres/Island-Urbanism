@@ -258,8 +258,10 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
                 builder.append(", ");
             }
 
-            builder.deleteCharAt(builder.length()-1);
-            builder.deleteCharAt(builder.length()-1);
+            if(!edges.isEmpty()) {
+                builder.deleteCharAt(builder.length() - 1);
+                builder.deleteCharAt(builder.length() - 1);
+            }
             builder.append("]\n");
         }
 
