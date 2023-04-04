@@ -29,6 +29,14 @@ public final class Point implements Positionable<Double>, IElevation, Thickenabl
 
     /**
      *
+     * @return The {@link Vertex} of this point
+     */
+    public Vertex getVertex() {
+        return this.vertex;
+    }
+
+    /**
+     *
      * @return The {@link PointType} of this point
      */
     public PointType getType() {
