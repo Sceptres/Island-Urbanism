@@ -10,6 +10,7 @@ import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Thickenable;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 
 import java.awt.*;
+import java.util.Objects;
 
 public final class Point implements Positionable<Double>, IElevation, Thickenable {
     private PointType type;
@@ -77,5 +78,17 @@ public final class Point implements Positionable<Double>, IElevation, Thickenabl
     @Override
     public float getThickness() {
         return this.vertex.getThickness();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Point point)) return false;
+        return type == point.type && Objects.equals(vertex, point.vertex);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, vertex);
     }
 }
