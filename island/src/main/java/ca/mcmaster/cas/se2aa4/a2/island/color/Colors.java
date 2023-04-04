@@ -39,4 +39,9 @@ public class Colors {
      * Path colors
      */
     public static final Color RIVER_COLOR = Colors.LAND_WATER;
+
+    /**
+     * Point colors
+     */
+    public static final Color CITY_COLOR = Color.GRAY;
 }
