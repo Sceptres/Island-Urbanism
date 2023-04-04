@@ -11,7 +11,7 @@
 
     <version>1.0</version>
 
-    <artifactId>pathfinder</artifactId>
+    <artifactId>2aa4.mesh.pathfinder</artifactId>
     <name>McMaster :: CAS :: 2AA4 :: A2 :: Graph ADT</name>
 
     <properties>
