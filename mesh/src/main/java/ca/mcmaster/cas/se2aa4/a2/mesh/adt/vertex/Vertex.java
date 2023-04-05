@@ -1,15 +1,16 @@
 package ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex;
+
 import ca.mcmaster.cas.se2aa4.a2.io.Structs;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.Util;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.properties.*;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.properties.Properties;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.*;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class Vertex implements Indexable,Thickenable, IProperties, Renderable, Colorable, Copier<Vertex>,
         Converter<Structs.Vertex>, Positionable<Double> {
