@@ -48,8 +48,8 @@ public class GraphicRenderer {
         mesh.getNonCentroidVertices().forEach(vertex -> {
             if(this.isDebug) {
                 vertex.setColor(Color.BLACK);
-                vertex.render(canvas);
             }
+            vertex.render(canvas);
         });
 
         if(this.isDebug) {
