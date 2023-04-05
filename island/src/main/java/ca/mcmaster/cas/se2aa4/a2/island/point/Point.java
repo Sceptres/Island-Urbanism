@@ -53,6 +53,14 @@ public final class Point implements Positionable<Double>, IElevation, Thickenabl
         this.vertex.setColor(color);
     }
 
+    /**
+     * Only hull vertices can be a city.
+     * @return True if this point can be a city. False otherwise.
+     */
+    public boolean canCity() {
+        return this.type != PointType.CITY && !this.vertex.isCentroid();
+    }
+
     @Override
     public Double getX() {
         return this.vertex.getX();
