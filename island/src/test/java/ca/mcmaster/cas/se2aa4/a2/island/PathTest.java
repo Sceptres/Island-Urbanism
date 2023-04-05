@@ -2,6 +2,7 @@ package ca.mcmaster.cas.se2aa4.a2.island;
 
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segment;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +20,14 @@ public class PathTest {
         Vertex v1 = new Vertex(0, 0);
         Vertex v2 = new Vertex(100, 0);
 
-        this.segment = new Segment(v1, v2);
-        this.path = new Path(this.segment);
+        Point p1 = new Point(v1);
+        Point p2 = new Point(v2);
 
-        assertEquals(this.path.getV1(), v1);
-        assertEquals(this.path.getV2(), v2);
+        this.segment = new Segment(v1, v2);
+        this.path = new Path(this.segment, p1, p2);
+
+        assertEquals(this.path.getP1(), p1);
+        assertEquals(this.path.getP2(), p2);
     }
 
     @Test

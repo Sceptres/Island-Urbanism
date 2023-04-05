@@ -5,9 +5,9 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.Ocean;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.GeographyGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,11 +26,11 @@ public class RiverGenerator implements GeographyGenerator<River> {
         List<River> generatedRivers = new ArrayList<>();
 
         for (int i = 0; i < num; i++) {
-            List<Vertex> springs = this.getSprings(generatedRivers);
+            List<Point> springs = this.getSprings(generatedRivers);
 
             float flow = random.nextFloat(1f, 1.5f);
             int randIdx = random.nextInt(springs.size()-1);
-            Vertex start = springs.get(randIdx);
+            Point start = springs.get(randIdx);
 
             this.generateRiver(generatedRivers, start, flow);
         }
@@ -45,10 +45,10 @@ public class RiverGenerator implements GeographyGenerator<River> {
     /**
      *
      * @param rivers The already existing {@link River}
-     * @param start The start {@link Vertex} of the river
+     * @param start The start {@link Point} of the river
      * @param flow The flow of the river
      */
-    private void generateRiver(List<River> rivers, Vertex start, float flow) {
+    private void generateRiver(List<River> rivers, Point start, float flow) {
         River river = new River(start, flow);
         rivers.add(river);
         this.generateRiverPath(rivers, river, start);
@@ -86,9 +86,9 @@ public class RiverGenerator implements GeographyGenerator<River> {
      *
      * @param rivers The list of rivers generated so far
      * @param river The {@link River} we are generating path for
-     * @param start The {@link Vertex} to start the river at
+     * @param start The {@link Point} to start the river at
      */
-    private void generateRiverPath(List<River> rivers, River river, Vertex start) {
+    private void generateRiverPath(List<River> rivers, River river, Point start) {
         List<Tile> landTiles = this.land.getTiles();
         List<Tile> oceanTiles = this.ocean.getTiles();
         List<Tile> tiles = new ArrayList<>();
@@ -98,15 +98,15 @@ public class RiverGenerator implements GeographyGenerator<River> {
         List<Path> paths = this.land.getPaths();
 
         Optional<Path> newPath = paths.stream()
-                .filter(p -> p.hasVertex(start))
+                .filter(p -> p.hasPoint(start))
                 .min(Comparator.comparingDouble(Path::getElevation));
 
         if (newPath.isPresent()) {
             Path path = newPath.get();
 
-            Vertex v1 = path.getV1();
-            Vertex v2 = path.getV2();
-            Vertex next = v1.equals(start) ? v2 : v1;
+            Point v1 = path.getP1();
+            Point v2 = path.getP2();
+            Point next = v1.equals(start) ? v2 : v1;
 
             List<Tile> pathTiles = tiles.stream().filter(t -> t.getPaths().contains(path)).toList();
             river.addPath(path, start, pathTiles);
@@ -114,7 +114,7 @@ public class RiverGenerator implements GeographyGenerator<River> {
             boolean isLowestElevation = this.isAtLowest(river, path, start);
 
             boolean reachedWater = tiles.stream()
-                    .filter(t -> t.getVertices().contains(next))
+                    .filter(t -> t.getPoints().contains(next))
                     .anyMatch(t -> t.getType().getGroup() == TileGroup.WATER);
 
             boolean hasIntersection = rivers.stream()
@@ -134,15 +134,15 @@ public class RiverGenerator implements GeographyGenerator<River> {
      *
      * @param river The {@link River} to check
      * @param path The current {@link Path} to check elevation
-     * @param start The start {@link Vertex} of the path
+     * @param start The start {@link Point} of the path
      * @return True if this {@link Path} is at the lowest point. False otherwise.
      */
-    private boolean isAtLowest(River river, Path path, Vertex start) {
+    private boolean isAtLowest(River river, Path path, Point start) {
         boolean isLowest = false;
 
         if (!river.getStartVertices().contains(start)) {
-            Vertex endVertex = river.getEnd();
-            Path lastPath = river.getRiverPath().stream().filter(p -> p.hasVertex(endVertex)).findFirst().get();
+            Point endVertex = river.getEnd();
+            Path lastPath = river.getRiverPath().stream().filter(p -> p.hasPoint(endVertex)).findFirst().get();
             isLowest = lastPath.getElevation() < path.getElevation();
         }
 
@@ -175,16 +175,16 @@ public class RiverGenerator implements GeographyGenerator<River> {
      * @param rivers The list of already existing rivers
      * @return A list with all the available springs
      */
-    private List<Vertex> getSprings(List<River> rivers) {
-        List<Vertex> usedSprings = rivers.stream()
+    private List<Point> getSprings(List<River> rivers) {
+        List<Point> usedSprings = rivers.stream()
                 .flatMap(r -> r.getVertices().stream())
                 .distinct()
                 .toList();
 
-        List<Vertex> springs =  this.land.getTiles().stream()
+        List<Point> springs =  this.land.getTiles().stream()
                 .filter(t -> t.getType().getGroup() == TileGroup.LAND)
                 .filter(t -> t.getNeighbors().stream().noneMatch(t1 -> t1.getType().getGroup() == TileGroup.WATER))
-                .flatMap(t -> t.getVertices().stream())
+                .flatMap(t -> t.getPaths().stream().flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()})))
                 .distinct()
                 .collect(Collectors.toList());
 

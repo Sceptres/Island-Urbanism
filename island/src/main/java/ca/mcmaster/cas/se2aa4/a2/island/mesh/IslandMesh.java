@@ -5,9 +5,11 @@ import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.SoilAbsorptionProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.neighborhood.NeighborhoodRelation;
 import ca.mcmaster.cas.se2aa4.a2.island.neighborhood.TileNeighborhood;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.mesh.Mesh;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.polygon.Polygon;
+import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segment;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Converter;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class IslandMesh implements Converter<Mesh> {
     private final Mesh mesh;
     private final List<Tile> tiles;
     private final List<Path> paths;
+    private final List<Point> points;
 
     /**
      *
@@ -42,8 +45,24 @@ public class IslandMesh implements Converter<Mesh> {
      * @param mesh The {@link Mesh} to get the segments from
      * @return The {@link List} of {@link Path}
      */
-    private static List<Path> createPaths(Mesh mesh) {
-        return mesh.getSegments().stream().map(Path::new).toList();
+    private static List<Path> createPaths(Mesh mesh, List<Point> points) {
+        List<Segment> segments = mesh.getSegments();
+        List<Path> paths = new ArrayList<>();
+
+        for(Segment segment : segments) {
+            Structs.Segment convertedSegment = segment.getConverted();
+            Point p1 = points.get(convertedSegment.getV1Idx());
+            Point p2 = points.get(convertedSegment.getV2Idx());
+
+            Path path = new Path(segment, p1, p2);
+            paths.add(path);
+        }
+
+        return paths;
+    }
+
+    private static List<Point> createPoints(Mesh mesh) {
+        return mesh.getVertices().stream().map(Point::new).toList();
     }
 
     /**
@@ -52,11 +71,20 @@ public class IslandMesh implements Converter<Mesh> {
      */
     public IslandMesh(Mesh mesh, SoilAbsorptionProfile soilAbsorptionProfile) {
         this.mesh = mesh;
-        this.paths = IslandMesh.createPaths(mesh);
+        this.points = IslandMesh.createPoints(mesh);
+        this.paths = IslandMesh.createPaths(mesh, this.points);
         this.tiles = IslandMesh.createTiles(mesh, this.paths, soilAbsorptionProfile);
 
         NeighborhoodRelation relation = new TileNeighborhood();
         relation.calculateNeighbors(this.tiles);
+    }
+
+    /**
+     *
+     * @return The {@link Point} found in this mesh
+     */
+    public List<Point> getPoints() {
+        return this.points;
     }
 
     /**

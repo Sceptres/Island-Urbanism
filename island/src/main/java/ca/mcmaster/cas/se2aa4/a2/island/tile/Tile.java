@@ -9,14 +9,15 @@ import ca.mcmaster.cas.se2aa4.a2.island.humidity.profiles.HumidityProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.SoilAbsorptionProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.profiles.WetSoilAbsorption;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.configuration.Configurator;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileType;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.polygon.Polygon;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Neighborable;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Positionable;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,10 +105,12 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
 
     /**
      *
-     * @return The list of {@link Vertex} that belong to this tile
+     * @return The {@link Point} of this tile
      */
-    public List<Vertex> getVertices() {
-        return this.polygon.getVertices();
+    public List<Point> getPoints() {
+        return this.paths.stream()
+                .flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()}))
+                .toList();
     }
 
     @Override

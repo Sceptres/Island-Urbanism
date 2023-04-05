@@ -5,6 +5,7 @@ import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.ElevationHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.handlers.LowerElevationHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.profiles.ElevationProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segment;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 
@@ -12,11 +13,15 @@ import java.util.Objects;
 
 public final class Path implements IElevation {
     private PathType type;
+    private final Point p1;
+    private final Point p2;
     private final Segment segment;
     private final ElevationProfile elevationProfile;
     private final ElevationHandler elevationHandler;
 
-    public Path(Segment segment) {
+    public Path(Segment segment, Point p1, Point p2) {
+        this.p1 = p1;
+        this.p2 = p2;
         this.segment = segment;
         this.setType(PathType.NONE);
         this.setWidth(1f);
@@ -28,18 +33,18 @@ public final class Path implements IElevation {
 
     /**
      *
-     * @return The first {@link Vertex} of the path
+     * @return The first {@link Point} of the path
      */
-    public Vertex getV1() {
-        return this.segment.getV1();
+    public Point getP1() {
+        return this.p1;
     }
 
     /**
      *
-     * @return The second {@link Vertex} of the path
+     * @return The second {@link Point} of the path
      */
-    public Vertex getV2() {
-        return this.segment.getV2();
+    public Point getP2() {
+        return this.p2;
     }
 
     /**
@@ -118,20 +123,21 @@ public final class Path implements IElevation {
     /**
      *
      * @param path The {@link Path} to check connection with
-     * @param vertex An end of the path to check connection to
+     * @param point An end of the path to check connection to
      * @return True if both paths are connected through the given vertex. False otherwise.
      */
-    public boolean isConnected(Path path, Vertex vertex) {
+    public boolean isConnected(Path path, Point point) {
+        Vertex vertex = point.getVertex();
         return this.segment.shareVertex(path.segment) && this.segment.getSharedVertex(path.segment).equals(vertex);
     }
 
     /**
      *
-     * @param vertex The {@link Vertex} to check if this path has
+     * @param point The {@link Point} to check if this path has
      * @return True if this path contains the vertex. False otherwise
      */
-    public boolean hasVertex(Vertex vertex) {
-        return this.getV1().equals(vertex) || this.getV2().equals(vertex);
+    public boolean hasPoint(Point point) {
+        return this.getP1().equals(point) || this.getP2().equals(point);
     }
 
     @Override
