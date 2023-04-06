@@ -17,9 +17,15 @@ public abstract class AbstractPathAlgorithm<T> implements PathAlgorithm<T> {
      * @param start The node where the path starts
      * @param end The node where the path ends
      * @return A list of nodes in orders that represents the path
+     * @throws IllegalArgumentException If at least one of the given nodes does not exist within the graph
      */
     @Override
     public final List<T> calculatePath(T start, T end) {
+        if(!this.graph.containsNode(start) || !this.graph.containsNode(end)) {
+            String message = String.format("Node %s or %s do not exist within the graph", start, end);
+            throw new IllegalArgumentException(message);
+        }
+
         return this.findPath(this.graph, start, end);
     }
 
