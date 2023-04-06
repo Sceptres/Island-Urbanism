@@ -47,7 +47,8 @@ public class IslandInputHandler {
             Map.entry(SeedOption.OPTION_STR, new SeedOption()),
             Map.entry(SoilAbsorptionProfileOption.OPTION_STR, new SoilAbsorptionProfileOption()),
             Map.entry(BiomeOption.OPTION_STR, new BiomeOption()),
-            Map.entry(HookOption.OPTION_STR, new HookOption())
+            Map.entry(HookOption.OPTION_STR, new HookOption()),
+            Map.entry(CitiesOption.OPTION_STR, new CitiesOption())
     );
 
     /**
@@ -379,5 +380,34 @@ public class IslandInputHandler {
         }
 
         return hook;
+    }
+
+    /**
+     *
+     * @param handler The {@link InputHandler} to extract the number of cities from
+     * @return The number of cities inputted by the user.
+     * @throws IllegalInputException If the user gave an invalid input.
+     */
+    public static int getNumCities(InputHandler handler) throws IllegalInputException {
+        String value = handler.getOptionValue(
+                IslandInputHandler.getIslandOption(CitiesOption.OPTION_STR),
+                CitiesOption.DEFAULT_VALUE
+        );
+
+        int numCities = -1;
+
+        try {
+            numCities = Integer.parseInt(value);
+
+            if(numCities < 0)
+                throw new IllegalArgumentException();
+        } catch(NumberFormatException e) {
+            String message = String.format("Invalid number of rivers %s!", value);
+            handler.printHelp(message);
+        } catch(IllegalArgumentException e) {
+            handler.printHelp("Cannot have a negative number of rivers!");
+        }
+
+        return numCities;
     }
 }
