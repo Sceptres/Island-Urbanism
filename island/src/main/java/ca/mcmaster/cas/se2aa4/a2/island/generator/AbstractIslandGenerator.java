@@ -8,11 +8,15 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
+import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public abstract class AbstractIslandGenerator implements IslandGenerator {
 
@@ -67,6 +71,8 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateRivers(this.rand, this.land, this.ocean, this.numRivers);
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
+
+        this.generateCities(land, 100);
     }
 
     /**
@@ -153,5 +159,30 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
      */
     private void biomeHandling(Land land, Biome biome) {
         land.getTiles().forEach(biome::takeTile);
+    }
+
+    private void generateCities(Land land, int numCities) {
+        List<Point> cityPoints = land.getTiles().stream()
+                .filter(t -> t.getType().getGroup() != TileGroup.WATER)
+                .flatMap(t -> t.getPoints().stream())
+                .distinct()
+                .filter(Point::canCity)
+                .collect(Collectors.toList());
+
+        for(int i=0; i < numCities; i++) {
+            int randomIdx = this.rand.nextInt(cityPoints.size());
+            Point point = cityPoints.get(randomIdx);
+            point.setType(PointType.CITY);
+
+            float citySize = this.rand.nextFloat(2, 10);
+            point.setThickness(citySize);
+
+            List<Point> ineligiblePoints = this.mesh.getPaths().stream()
+                    .filter(p -> p.hasPoint(point))
+                    .flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()}))
+                    .distinct()
+                    .toList();
+            cityPoints.removeAll(ineligiblePoints);
+        }
     }
 }
