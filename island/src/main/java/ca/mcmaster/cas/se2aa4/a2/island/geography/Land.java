@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.geography;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
@@ -71,12 +72,9 @@ public class Land extends TiledGeography {
      * @return All the unused paths on the land
      */
     public List<Path> getPaths() {
-        return this.tiles.stream()
-                .filter(t -> t.getType().getGroup() == TileGroup.LAND)
-                .flatMap(t -> t.getPaths().stream())
-                .filter(p -> p.getType() == PathType.NONE)
-                .distinct()
-                .toList();
+        List<Tile> tiles = this.tiles.stream().filter(t -> t.getType().getGroup() == TileGroup.LAND).toList();
+        List<Path> paths = Util.getTilePaths(tiles);
+        return paths.stream().filter(p -> p.getType() == PathType.NONE).toList();
     }
 
     @Override

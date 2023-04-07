@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Ocean;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
@@ -10,7 +11,6 @@ import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RiverGenerator implements GeographyGenerator<River> {
     private final Land land;
@@ -181,12 +181,11 @@ public class RiverGenerator implements GeographyGenerator<River> {
                 .distinct()
                 .toList();
 
-        List<Point> springs =  this.land.getTiles().stream()
+        List<Tile> tiles = this.land.getTiles().stream()
                 .filter(t -> t.getType().getGroup() == TileGroup.LAND)
                 .filter(t -> t.getNeighbors().stream().noneMatch(t1 -> t1.getType().getGroup() == TileGroup.WATER))
-                .flatMap(t -> t.getPaths().stream().flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()})))
-                .distinct()
-                .collect(Collectors.toList());
+                .toList();
+        List<Point> springs = Util.getTilePoints(tiles);
 
         springs.removeAll(usedSprings);
         return springs;

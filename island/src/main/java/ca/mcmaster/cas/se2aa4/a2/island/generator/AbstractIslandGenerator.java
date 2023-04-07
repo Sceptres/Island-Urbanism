@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.generator;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.biome.Biome;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.altimetry.AltimeterProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
@@ -8,12 +9,12 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
+import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -161,13 +162,14 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         land.getTiles().forEach(biome::takeTile);
     }
 
+    /**
+     *
+     * @param land The {@link Land} of the island
+     * @param numCities The number of cities to generate
+     */
     private void generateCities(Land land, int numCities) {
-        List<Point> cityPoints = land.getTiles().stream()
-                .filter(t -> t.getType().getGroup() != TileGroup.WATER)
-                .flatMap(t -> t.getPoints().stream())
-                .distinct()
-                .filter(Point::canCity)
-                .collect(Collectors.toList());
+        List<Tile> tiles = land.getTiles().stream().filter(t -> t.getType().getGroup() != TileGroup.WATER).toList();
+        List<Point> cityPoints = Util.getTilePoints(tiles).stream().filter(Point::canCity).collect(Collectors.toList());
 
         for(int i=0; i < numCities; i++) {
             int randomIdx = this.rand.nextInt(cityPoints.size());
@@ -177,11 +179,8 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
             float citySize = this.rand.nextFloat(2, 10);
             point.setThickness(citySize);
 
-            List<Point> ineligiblePoints = this.mesh.getPaths().stream()
-                    .filter(p -> p.hasPoint(point))
-                    .flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()}))
-                    .distinct()
-                    .toList();
+            List<Path> paths = this.mesh.getPaths().stream().filter(p -> p.hasPoint(point)).toList();
+            List<Point> ineligiblePoints = Util.getPathPoints(paths);
             cityPoints.removeAll(ineligiblePoints);
         }
     }

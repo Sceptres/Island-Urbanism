@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.tile;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.IElevation;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.ElevationHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.profiles.ElevationProfile;
@@ -17,7 +18,6 @@ import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Neighborable;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Positionable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,9 +108,7 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
      * @return The {@link Point} of this tile
      */
     public List<Point> getPoints() {
-        return this.paths.stream()
-                .flatMap(p -> Arrays.stream(new Point[]{p.getP1(), p.getP2()}))
-                .toList();
+        return Util.getPathPoints(this.paths);
     }
 
     @Override
