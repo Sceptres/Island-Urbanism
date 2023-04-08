@@ -47,7 +47,9 @@ public class TileTest {
 
         this.polygon = new Polygon(polygonSegments);
 
-        this.tile = new Tile(this.polygon, paths);
+        Point center = new Point(this.polygon.getCentroid());
+
+        this.tile = new Tile(this.polygon, paths, center);
     }
 
     @Test

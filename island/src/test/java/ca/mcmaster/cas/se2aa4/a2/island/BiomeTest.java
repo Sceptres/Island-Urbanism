@@ -49,7 +49,9 @@ public class BiomeTest {
 
         Polygon polygon = new Polygon(polygonSegments);
 
-        tile = new Tile(polygon, paths);
+        Point center = new Point(polygon.getCentroid());
+
+        tile = new Tile(polygon, paths, center);
 
         biome = new TropicalBiome();
     }

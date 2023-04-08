@@ -27,13 +27,15 @@ public class IslandMesh implements Converter<Mesh> {
      * @param paths All the paths in the mesh to tie to the tiles
      * @return All the {@link Tile} in the mesh
      */
-    private static List<Tile> createTiles(Mesh mesh, List<Path> paths, SoilAbsorptionProfile soilAbsorptionProfile) {
+    private static List<Tile> createTiles(Mesh mesh, List<Path> paths, List<Point> points, SoilAbsorptionProfile soilAbsorptionProfile) {
         List<Polygon> polygons = mesh.getPolygons();
         List<Tile> tiles = new ArrayList<>();
 
         for(Polygon polygon : polygons) {
-            List<Path> tilePaths = polygon.getConverted().getSegmentIdxsList().stream().map(paths::get).toList();
-            Tile tile = new Tile(polygon, tilePaths, soilAbsorptionProfile);
+            Structs.Polygon converted = polygon.getConverted();
+            List<Path> tilePaths = converted.getSegmentIdxsList().stream().map(paths::get).toList();
+            Point point = points.get(converted.getCentroidIdx());
+            Tile tile = new Tile(polygon, tilePaths, point, soilAbsorptionProfile);
             tiles.add(tile);
         }
 
@@ -73,10 +75,19 @@ public class IslandMesh implements Converter<Mesh> {
         this.mesh = mesh;
         this.points = IslandMesh.createPoints(mesh);
         this.paths = IslandMesh.createPaths(mesh, this.points);
-        this.tiles = IslandMesh.createTiles(mesh, this.paths, soilAbsorptionProfile);
+        this.tiles = IslandMesh.createTiles(mesh, this.paths, this.points, soilAbsorptionProfile);
 
         NeighborhoodRelation relation = new TileNeighborhood();
         relation.calculateNeighbors(this.tiles);
+    }
+
+    /**
+     *
+     * @param path The {@link Path} to add to this mesh
+     */
+    public void addPath(Path path) {
+        this.paths.add(path);
+        this.mesh.addSegment(path.getSegment());
     }
 
     /**

@@ -30,6 +30,7 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
     private final HumidityProfile humidity;
     private final ElevationProfile elevation;
     private final Polygon polygon;
+    private final Point centroid;
     private final List<Path> paths;
     private final List<Tile> neighbors;
 
@@ -39,7 +40,7 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
      * @param paths The list {@link Path} belonging to this tile
      * @param soilAbsorptionProfile The {@link SoilAbsorptionProfile} of this tile
      */
-    public Tile(Polygon polygon, List<Path> paths, SoilAbsorptionProfile soilAbsorptionProfile) {
+    public Tile(Polygon polygon, List<Path> paths, Point centroid, SoilAbsorptionProfile soilAbsorptionProfile) {
         this.polygon = polygon;
         this.neighbors = new Tiles();
         this.paths = new ArrayList<>(paths);
@@ -48,10 +49,11 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
         this.humidity = new HumidityProfile();
         this.elevation = new ElevationProfile();
         this.aquifer = false;
+        this.centroid = centroid;
     }
 
-    public Tile(Polygon polygon, List<Path> paths) {
-        this(polygon, paths, new WetSoilAbsorption());
+    public Tile(Polygon polygon, List<Path> paths, Point centroid) {
+        this(polygon, paths, centroid, new WetSoilAbsorption());
     }
 
     /**
@@ -101,6 +103,10 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
      */
     public List<Path> getPaths() {
         return new ArrayList<>(this.paths);
+    }
+
+    public Point getCentroid() {
+        return this.centroid;
     }
 
     /**

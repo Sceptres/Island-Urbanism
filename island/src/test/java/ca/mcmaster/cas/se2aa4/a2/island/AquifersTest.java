@@ -48,7 +48,9 @@ public class AquifersTest {
 
         this.polygon = new Polygon(polygonSegments);
 
-        this.tile = new Tile(this.polygon, paths);
+        Point point = new Point(this.polygon.getCentroid());
+
+        this.tile = new Tile(this.polygon, paths, point);
     }
 
     /**
