@@ -49,7 +49,7 @@ public class StarNetwork extends AbstractRoadGenerator {
         List<List<Point>> roads = new ArrayList<>();
 
         PathAlgorithm<Point> roadFinder = new ShortestPath<>(graph);
-        Point city = super.cities.stream().max(Comparator.comparingDouble(Point::getThickness)).get();
+        Point city = super.cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
 
         List<Point> otherCities = super.cities.stream().filter(p -> !p.equals(city)).toList();
         otherCities.stream().parallel().unordered().forEach(c -> {
