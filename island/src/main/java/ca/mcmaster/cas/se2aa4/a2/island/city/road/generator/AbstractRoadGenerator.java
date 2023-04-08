@@ -30,7 +30,7 @@ public abstract class AbstractRoadGenerator implements RoadGenerator {
         Graph<Point> graph = this.generateGraph(this.land);
         List<List<Point>> roads = this.generateRoads(graph);
 
-        roads.stream().unordered().parallel().forEach(r -> {
+        roads.parallelStream().unordered().forEach(r -> {
             for(int i=0; i < r.size()-1; i++) {
                 Point start = r.get(i);
                 Point next = r.get(i+1);

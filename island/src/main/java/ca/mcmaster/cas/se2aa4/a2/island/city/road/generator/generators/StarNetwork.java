@@ -22,7 +22,7 @@ public class StarNetwork extends AbstractRoadGenerator {
     protected Graph<Point> generateGraph(Land land) {
         Graph<Point> graph = new UnDirectedGraph<>(Point.class, true);
 
-        super.points.stream().unordered().parallel().forEach(point -> {
+        super.points.parallelStream().unordered().forEach(point -> {
             synchronized(graph) {
                 graph.addNode(point);
             }
@@ -52,7 +52,7 @@ public class StarNetwork extends AbstractRoadGenerator {
         Point city = super.cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
 
         List<Point> otherCities = super.cities.stream().filter(p -> !p.equals(city)).toList();
-        otherCities.stream().parallel().unordered().forEach(c -> {
+        otherCities.parallelStream().unordered().forEach(c -> {
             List<Point> path = roadFinder.calculatePath(city, c);
             synchronized(roads) {
                 roads.add(path);
