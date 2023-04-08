@@ -54,11 +54,11 @@ public final class Point implements Positionable<Double>, IElevation, Thickenabl
     }
 
     /**
-     * Only hull vertices can be a city.
+     * Only centroid vertices can be a city.
      * @return True if this point can be a city. False otherwise.
      */
     public boolean canCity() {
-        return this.type != PointType.CITY && !this.vertex.isCentroid();
+        return this.type != PointType.CITY && this.vertex.isCentroid();
     }
 
     @Override
