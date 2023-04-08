@@ -1,7 +1,10 @@
 package ca.mcmaster.cas.se2aa4.a2.island.generator;
 
-import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.biome.Biome;
+import ca.mcmaster.cas.se2aa4.a2.island.city.generator.CityGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.generator.generators.RandomCityGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.RoadGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.generators.StarNetwork;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.altimetry.AltimeterProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Ocean;
@@ -9,15 +12,12 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
-import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
-import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public abstract class AbstractIslandGenerator implements IslandGenerator {
 
@@ -73,7 +73,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
 
-        this.generateCities(land, 100);
+        this.generateCities(land, this.rand, 15);
     }
 
     /**
@@ -167,21 +167,17 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
      * @param land The {@link Land} of the island
      * @param numCities The number of cities to generate
      */
-    private void generateCities(Land land, int numCities) {
-        List<Tile> tiles = land.getTiles().stream().filter(t -> t.getType().getGroup() != TileGroup.WATER).toList();
-        List<Point> cityPoints = Util.getTilePoints(tiles).stream().filter(Point::canCity).collect(Collectors.toList());
+    private void generateCities(Land land, Random random, int numCities) {
+        long startTime = System.currentTimeMillis();
 
-        for(int i=0; i < numCities; i++) {
-            int randomIdx = this.rand.nextInt(cityPoints.size());
-            Point point = cityPoints.get(randomIdx);
-            point.setType(PointType.CITY);
+        CityGenerator cityGenerator = new RandomCityGenerator(land);
+        List<Point> cities = cityGenerator.generate(random, numCities);
+        cities.forEach(land::addCity);
 
-            float citySize = this.rand.nextFloat(2, 10);
-            point.setThickness(citySize);
+        RoadGenerator roadGenerator = new StarNetwork(land);
+        roadGenerator.generate();
 
-            List<Path> paths = this.mesh.getPaths().stream().filter(p -> p.hasPoint(point)).toList();
-            List<Point> ineligiblePoints = Util.getPathPoints(paths);
-            cityPoints.removeAll(ineligiblePoints);
-        }
+        long endTime = System.currentTimeMillis();
+        System.out.printf("City generation: %d s\n", (endTime-startTime)/1000);
     }
 }
