@@ -28,6 +28,10 @@ public interface Node<T> {
      */
     void addEdge(Edge<T> edge) throws IllegalArgumentException;
 
+    /**
+     *
+     * @param edge The {@link Edge} to remove from this node's edges
+     */
     void removeEdge(Edge<T> edge);
 
     /**
