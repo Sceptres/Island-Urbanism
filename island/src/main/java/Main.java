@@ -12,7 +12,6 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        long start = System.currentTimeMillis();
         try {
             InputHandler handler = IslandInputHandler.getInputHandler(args);
 
@@ -36,7 +35,5 @@ public class Main {
         } catch(IllegalInputException e) {
             System.exit(1);
         }
-        long end = System.currentTimeMillis();
-        System.out.printf("Island generation: %d s\n", (end-start)/1000);
     }
 }

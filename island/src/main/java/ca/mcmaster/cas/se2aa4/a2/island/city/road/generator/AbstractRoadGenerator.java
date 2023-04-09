@@ -29,23 +29,23 @@ public abstract class AbstractRoadGenerator implements RoadGenerator {
 
     @Override
     public final void generate() {
-        Graph<Point> graph = this.generateGraph(this.tiles, this.paths, this.points, this.cities);
-        List<List<Point>> roads = this.generateRoads(graph, this.cities);
+        if(cities.size() > 1) {
+            Graph<Point> graph = this.generateGraph(this.tiles, this.paths, this.points, this.cities);
+            List<List<Point>> roads = this.generateRoads(graph, this.cities);
 
-        roads.parallelStream().unordered().forEach(r -> {
-            for(int i=0; i < r.size()-1; i++) {
-                Point start = r.get(i);
-                Point next = r.get(i+1);
+            roads.forEach(r -> {
+                for (int i = 0; i < r.size() - 1; i++) {
+                    Point start = r.get(i);
+                    Point next = r.get(i + 1);
 
-                Segment segment = new Segment(start.getVertex(), next.getVertex());
-                Path path = new Path(segment, start, next);
-                path.setType(PathType.ROAD);
+                    Segment segment = new Segment(start.getVertex(), next.getVertex());
+                    Path path = new Path(segment, start, next);
+                    path.setType(PathType.ROAD);
 
-                synchronized(mesh) {
                     this.mesh.addPath(path);
                 }
-            }
-        });
+            });
+        }
     }
 
     /**

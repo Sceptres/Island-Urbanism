@@ -26,11 +26,9 @@ public class StarNetwork extends AbstractRoadGenerator {
     protected Graph<Point> generateGraph(List<Tile> tiles, List<Path> paths, List<Point> points, List<Point> cities) {
         Graph<Point> graph = new UnDirectedGraph<>(true);
 
-        tiles.parallelStream().forEach(t -> {
+        tiles.forEach(t -> {
             Point tCentroid = t.getCentroid();
-            synchronized(graph) {
-                graph.addNode(tCentroid);
-            }
+            graph.addNode(tCentroid);
 
             List<Path> tPaths = t.getPaths();
 
@@ -51,11 +49,9 @@ public class StarNetwork extends AbstractRoadGenerator {
                     weight = 100;
                 }
 
-                synchronized(graph) {
-                    graph.addNode(t1Centroid);
-                    graph.addEdge(tCentroid, t1Centroid);
-                    graph.setEdgeWeight(tCentroid, t1Centroid, weight);
-                }
+                graph.addNode(t1Centroid);
+                graph.addEdge(tCentroid, t1Centroid);
+                graph.setEdgeWeight(tCentroid, t1Centroid, weight);
             });
         });
 
@@ -68,19 +64,12 @@ public class StarNetwork extends AbstractRoadGenerator {
 
         Point city = cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
 
-        long start = System.currentTimeMillis();
         PathAlgorithm<Point> roadFinder = new ShortestPath<>(graph, city);
-        long end = System.currentTimeMillis();
-
-        System.out.printf("Pathfinder: %d ms\n", (end-start));
 
         List<Point> otherCities = cities.stream().filter(p -> !p.equals(city)).toList();
         otherCities.parallelStream().unordered().forEach(c -> {
             List<Point> path = roadFinder.findPath(c);
-
-            synchronized(roads) {
-                roads.add(path);
-            }
+            roads.add(path);
         });
         return roads;
     }
