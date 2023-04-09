@@ -197,12 +197,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public T getEdgeSourceNode(Edge<T> edge) {
-        return edge.getSourceNode();
+        return edge.getSourceNodeData();
     }
 
     @Override
     public T getEdgeTargetNode(Edge<T> edge) {
-        return edge.getTargetNode();
+        return edge.getTargetNodeData();
     }
 
     @Override
