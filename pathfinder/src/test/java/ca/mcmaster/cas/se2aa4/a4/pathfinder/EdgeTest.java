@@ -10,14 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EdgeTest {
     @Test
     public void edgeNodeTest() {
-        Edge edge;
+        Edge<String> edge;
 
         String n1 = "test1";
         String n2 = "test2";
 
-        edge = Edge.of(n1, n2);
+        edge = Edge.of(n1, n2, false);
 
-        assertEquals(n1, edge.getSourceNode());
-        assertEquals(n2, edge.getTargetNode());
+        assertEquals(n1, edge.getSourceNodeData());
+        assertEquals(n2, edge.getTargetNodeData());
     }
 }

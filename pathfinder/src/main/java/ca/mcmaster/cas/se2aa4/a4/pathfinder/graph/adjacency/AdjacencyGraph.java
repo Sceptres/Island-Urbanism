@@ -2,9 +2,11 @@ package ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.Graph;
+import ca.mcmaster.cas.se2aa4.a4.pathfinder.node.Node;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * The adjacency list representation of a graph taught in 2C03. This design is also
@@ -17,17 +19,13 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     protected int numNodes;
     protected int numEdges;
     protected final boolean isWeighted;
-    protected final Class<T> dataClass;
-    protected final Map<T, Set<Edge>> graph;
-    protected final Map<Edge, Double> weightMap;
+    protected final Set<Node<T>> graph;
 
-    protected AdjacencyGraph(Class<T> dataClass, boolean isWeighted) {
+    protected AdjacencyGraph(boolean isWeighted) {
         this.numNodes = 0;
         this.numEdges = 0;
         this.isWeighted = isWeighted;
-        this.dataClass = Objects.requireNonNull(dataClass);
-        this.graph = new HashMap<>();
-        this.weightMap = new HashMap<>();
+        this.graph = new HashSet<>();
     }
 
     @Override
@@ -40,7 +38,6 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         this.numNodes = 0;
         this.numEdges = 0;
         this.graph.clear();
-        this.weightMap.clear();
     }
 
     @Override
@@ -50,11 +47,22 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void addNode(T t) {
-        if (!this.graph.containsKey(t)) {
-            Set<Edge> set = new HashSet<>();
-            this.graph.put(t, set);
+        if (!this.containsNode(t)) {
+            Node<T> node = Node.of(t);
+            this.graph.add(node);
             this.numNodes++;
         }
+    }
+
+    protected Node<T> getNode(T t) {
+        Optional<Node<T>> optional = this.graph.stream().filter(n -> n.getData().equals(t)).findFirst();
+
+        if(optional.isEmpty()) {
+            String message = String.format("Node %s does not exist in the graph!", t);
+            throw new IllegalArgumentException(message);
+        }
+
+        return optional.get();
     }
 
     @Override
@@ -64,15 +72,13 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void removeNode(T t) {
-        if (this.graph.containsKey(t)) {
-            Set<Edge> edges = this.graph.get(t);
-            this.graph.remove(t);
-
-            List<Edge> notRemovedEdges = this.getEdges().stream().filter(e -> e.getTargetNode().equals(t)).toList();
-            this.removeAllEdges(notRemovedEdges);
+        if (this.containsNode(t)) {
+            Node<T> node = this.getNode(t);
+            List<Edge<T>> edges = node.getEdges();
+            this.graph.remove(node);
 
             this.numNodes--;
-            this.numEdges -= edges.size()+notRemovedEdges.size();
+            this.numEdges -= edges.size();
         }
     }
 
@@ -91,12 +97,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public boolean containsNode(T t) {
-        return this.graph.containsKey(t);
+        return this.graph.contains(Node.of(t));
     }
 
     @Override
     public List<T> getNodes() {
-        return new ArrayList<>(this.graph.keySet());
+        return this.graph.stream().map(Node::getData).collect(Collectors.toList());
     }
 
     @Override
@@ -106,55 +112,57 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void addEdge(T t1, T t2) {
-        if(!this.graph.containsKey(t1) || !this.graph.containsKey(t2)) {
+        if(!this.containsNode(t1) || !this.containsNode(t2)) {
             String message = String.format("Nodes %s and %s are not added to the graph!", t1, t2);
             throw new IllegalArgumentException(message);
         }
 
         if(!this.hasEdge(t1, t2)) {
-            Edge edge = Edge.of(t1, t2);
-            Set<Edge> t1Edges = this.graph.get(t1);
-            t1Edges.add(edge);
-            this.weightMap.put(edge, 1d);
+            Node<T> node1 = this.getNode(t1);
+            Node<T> node2 = this.getNode(t2);
+            Edge<T> edge = Edge.of(node1, node2, this.isWeighted);
+            node1.addEdge(edge);
             this.numEdges++;
         }
     }
 
     @Override
-    public void addEdge(Edge edge) {
+    public void addEdge(Edge<T> edge) {
         T source = this.getEdgeSourceNode(edge);
         T target = this.getEdgeTargetNode(edge);
         this.addEdge(source, target);
     }
 
     @Override
-    public void addAllEdges(Collection<? extends Edge> edges) {
+    public List<Edge<T>> getNodeEdges(T t) {
+        Node<T> node = this.getNode(t);
+        return node.getEdges();
+    }
+
+    @Override
+    public void addAllEdges(Collection<? extends Edge<T>> edges) {
         edges.forEach(this::addEdge);
     }
 
     @Override
-    public void setEdgeWeight(Edge edge, double weight) {
-        if(this.isWeighted)
-            this.weightMap.put(edge, weight);
-    }
-
-    @Override
     public void setEdgeWeight(T t1, T t2, double weight) {
-        Edge edge = this.getEdge(t1, t2);
-        this.setEdgeWeight(edge, weight);
+        Edge<T> edge = this.getEdge(t1, t2);
+        edge.setWeight(weight);
     }
 
     @Override
-    public double getEdgeWeight(Edge edge) {
-        if(!this.getEdges().contains(edge)) {
+    public double getEdgeWeight(T t1, T t2) {
+        if(!this.hasEdge(t1, t2)) {
+            Edge<T> edge = Edge.of(t1, t2, this.isWeighted);
             String message = String.format("The edge %s does not exist in this graph!", edge);
             throw new IllegalArgumentException(message);
         }
-        return this.weightMap.get(edge);
+        Edge<T> edge = this.getEdge(t1, t2);
+        return edge.getWeight();
     }
 
     @Override
-    public void removeEdge(Edge edge) {
+    public void removeEdge(Edge<T> edge) {
         T source = this.getEdgeSourceNode(edge);
         T target = this.getEdgeTargetNode(edge);
         this.removeEdge(source, target);
@@ -162,29 +170,32 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void removeEdge(T t1, T t2) {
-        if(!this.getEdges().contains(Edge.of(t1, t2))) {
+        if(!this.getEdges().contains(Edge.of(t1, t2, this.isWeighted))) {
             String message = String.format("Nodes %s and %s do not exist in the graph!", t1, t2);
             throw new IllegalArgumentException(message);
         }
 
-        this.specificRemoveEdge(t1, t2);
+        Node<T> node1 = this.getNode(t1);
+        Node<T> node2 = this.getNode(t2);
+
+        this.specificRemoveEdge(node1, node2);
         this.numEdges--;
     }
 
     /**
      *
-     * @param t1 The source node of the edge
-     * @param t2 The target node of the edge
+     * @param n1 The source node of the edge
+     * @param n2 The target node of the edge
      */
-    protected abstract void specificRemoveEdge(T t1, T t2);
+    protected abstract void specificRemoveEdge(Node<T> n1, Node<T> n2);
 
     @Override
-    public void removeAllEdges(Collection<? extends Edge> edges) {
+    public void removeAllEdges(Collection<? extends Edge<T>> edges) {
         edges.forEach(this::removeEdge);
     }
 
     @Override
-    public void removeEdgesIf(Predicate<Edge> predicate) {
+    public void removeEdgesIf(Predicate<Edge<T>> predicate) {
         this.getEdges().forEach(e -> {
             if(predicate.test(e)) {
                 this.removeEdge(e);
@@ -193,68 +204,69 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public List<Edge> getEdges() {
-        return this.graph.values().stream().flatMap(Set::stream).toList();
+    public List<Edge<T>> getEdges() {
+        return this.graph.stream().flatMap(n -> n.getEdges().stream()).toList();
     }
 
     @Override
-    public T getEdgeSourceNode(Edge edge) {
-        return this.dataClass.cast(edge.getSourceNode());
+    public T getEdgeSourceNode(Edge<T> edge) {
+        return edge.getSourceNodeData();
     }
 
     @Override
-    public T getEdgeTargetNode(Edge edge) {
-        return this.dataClass.cast(edge.getTargetNode());
+    public T getEdgeTargetNode(Edge<T> edge) {
+        return edge.getTargetNodeData();
     }
 
     @Override
-    public Edge getEdge(T t1, T t2) {
-        Optional<Edge> edgeOptional = this.getEdges().stream()
-                .filter(e -> e.getSourceNode().equals(t1) && e.getTargetNode().equals(t2))
+    public Edge<T> getEdge(T t1, T t2) {
+        Node<T> node = this.getNode(t1);
+        List<Edge<T>> edges = node.getEdges();
+
+        Optional<Edge<T>> edgeOptional = edges.stream()
+                .filter(e -> e.getSourceNodeData().equals(t1) && e.getTargetNodeData().equals(t2))
                 .findFirst();
-        if(edgeOptional.isPresent()) {
-            return edgeOptional.get();
-        } else {
+
+        if(edgeOptional.isEmpty()) {
             String message = String.format("Unable to find the edge (%s, %s)!", t1, t2);
             throw new IllegalArgumentException(message);
         }
-    }
 
-    @Override
-    public abstract List<Edge> getNodeEdges(T t);
+        return edgeOptional.get();
+    }
 
     @Override
     public boolean hasEdge(T t1, T t2) {
-        Set<T> keys = this.graph.keySet();
-
-        if(!keys.contains(t1) || !keys.contains(t2))
+        if(!this.containsNode(t1) || !this.containsNode(t2))
             return false;
 
-        return this.checkEdges(t1, t2);
+        Node<T> node1 = this.getNode(t1);
+        Node<T> node2 = this.getNode(t2);
+
+        return this.checkEdges(node1, node2);
     }
 
-    @Override
-    public boolean hasEdge(Edge edge) {
-        T source = this.getEdgeSourceNode(edge);
-        T target = this.getEdgeTargetNode(edge);
-        return this.hasEdge(source, target);
-    }
-
-    protected abstract boolean checkEdges(T t1, T t2);
+    /**
+     *
+     * @param n1 The first {@link Node} of the {@link Edge} to check
+     * @param n2 The second {@link Node} of the {@link Edge} to check
+     * @return True if the edge exists. False otherwise.
+     */
+    protected abstract boolean checkEdges(Node<T> n1, Node<T> n2);
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("{\n");
 
-        for(T t : this.graph.keySet()) {
+        for(Node<T> t : this.graph) {
             builder.append(String.format("\t%s => [", t));
 
-            Set<Edge> edges = this.graph.get(t);
+            List<Edge<T>> edges = t.getEdges();
 
-            for(Edge edge : edges) {
+            for(Edge<T> edge : edges) {
                 builder.append(String.format("(%s):", edge));
-                builder.append(String.format("%.2f", this.getEdgeWeight(edge)));
+                builder.append(String.format("%.2f", edge.getWeight()));
                 builder.append(", ");
             }
 
@@ -277,7 +289,6 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         return numNodes == that.numNodes &&
                numEdges == that.numEdges &&
                isWeighted == that.isWeighted &&
-               Objects.equals(weightMap, that.weightMap) &&
                Objects.equals(graph, that.graph);
     }
 

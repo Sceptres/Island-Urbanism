@@ -84,20 +84,13 @@ public interface Graph<T> {
      *
      * @param edge The {@link Edge} to add to the graph
      */
-    void addEdge(Edge edge);
+    void addEdge(Edge<T> edge);
 
     /**
      *
      * @param edges The {@link Collection} of edges to add to the graph
      */
-    void addAllEdges(Collection<? extends Edge> edges);
-
-    /**
-     *
-     * @param edge The {@link Edge} to set weight of
-     * @param weight The weight to set the edge to
-     */
-    void setEdgeWeight(Edge edge, double weight);
+    void addAllEdges(Collection<? extends Edge<T>> edges);
 
     /**
      *
@@ -109,16 +102,17 @@ public interface Graph<T> {
 
     /**
      *
-     * @param edge The {@link Edge} to get weight of
+     * @param t1 The source node of the {@link Edge}
+     * @param t2 The target node of the {@link Edge}
      * @return The weight of the given edge
      */
-    double getEdgeWeight(Edge edge);
+    double getEdgeWeight(T t1, T t2);
 
     /**
      *
      * @param edge The {@link Edge} to remove.
      */
-    void removeEdge(Edge edge);
+    void removeEdge(Edge<T> edge);
 
     /**
      *
@@ -131,19 +125,19 @@ public interface Graph<T> {
      *
      * @param edges The edges to remove from the graph
      */
-    void removeAllEdges(Collection<? extends Edge> edges);
+    void removeAllEdges(Collection<? extends Edge<T>> edges);
 
     /**
      *
      * @param predicate The {@link Predicate} that represents when to remove an edge
      */
-    void removeEdgesIf(Predicate<Edge> predicate);
+    void removeEdgesIf(Predicate<Edge<T>> predicate);
 
     /**
      *
      * @return The list of edges in the graph
      */
-    List<Edge> getEdges();
+    List<Edge<T>> getEdges();
 
     /**
      *
@@ -151,28 +145,28 @@ public interface Graph<T> {
      * @param t2 The target node of the {@link Edge}
      * @return The {@link Edge} that contains the 2 given nodes
      */
-    Edge getEdge(T t1, T t2);
+    Edge<T> getEdge(T t1, T t2);
 
     /**
      *
      * @param t The node to check edges
      * @return The list of edges connected to the node
      */
-    List<Edge> getNodeEdges(T t);
+    List<Edge<T>> getNodeEdges(T t);
 
     /**
      *
      * @param edge The {@link Edge} to get source node of
      * @return The source node of the given edge
      */
-    T getEdgeSourceNode(Edge edge);
+    T getEdgeSourceNode(Edge<T> edge);
 
     /**
      *
      * @param edge The {@link Edge} to get the target node of
      * @return The target node of the given edge
      */
-    T getEdgeTargetNode(Edge edge);
+    T getEdgeTargetNode(Edge<T> edge);
 
     /**
      *
@@ -181,13 +175,6 @@ public interface Graph<T> {
      * @return True if there already exists an edge connecting these nodes. False otherwise.
      */
     boolean hasEdge(T t1, T t2);
-
-    /**
-     *
-     * @param edge The {@link Edge} to check for
-     * @return True if the edge exists. False otherwise.
-     */
-    boolean hasEdge(Edge edge);
 
     /**
      *

@@ -102,6 +102,8 @@ new graph, extend the Graph interface and implement all the methods. Also, to im
 extend the abstract path algorithm class or the path algorithm interface and implement the methods.
 
 ```java
+import java.util.List;
+
 public class NewGraph<T> implements Graph<T> {
     /*
      * Implement all the methods of the graph to match your representation of the graph.
@@ -114,22 +116,21 @@ public class ShortestPath<T> extends AbstractPathAlgorithm<T> {
     }
 
     @Override
-    protected List<T> findPath(Graph<T> graph, T start, T end) {
+    protected Map<T, T> findPaths(Graph<T> graph, T start) {
         /*
-         * Implement algorithm to find the path between start and end in
-         * graph. The returned list has start as the first element and end as
-         * the last element. The elements in between represent the path to 
-         * take to get to end from start.
+         * Implement algorithm to find the paths that start at `start`.
+         * The returned map has the key as the node and the value as the
+         * that comes before the key node in the path.
          */
     }
 }
 
 public class ShortestPath<T> implements PathAlgorithm<T> {
     @Override
-    protected List<T> findPath(Graph<T> graph, T start, T end) {
+    protected List<T> findPath(T end) {
         /*
-         * Implement algorithm to find the path between start and end in
-         * graph. The returned list has start as the first element and end as
+         * Implement algorithm to find the path that ends with end. 
+         * The returned list has a start node as the first element and end as
          * the last element. The elements in between represent the path to
          * take to get to end from start.
          */
