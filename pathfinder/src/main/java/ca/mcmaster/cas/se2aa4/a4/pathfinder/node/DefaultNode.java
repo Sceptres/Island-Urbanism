@@ -2,10 +2,7 @@ package ca.mcmaster.cas.se2aa4.a4.pathfinder.node;
 
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.edge.Edge;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultNode<T> implements Node<T> {
 
@@ -30,5 +27,22 @@ public class DefaultNode<T> implements Node<T> {
     @Override
     public List<Edge<T>> getEdges() {
         return new ArrayList<>(this.edges);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultNode<?> that)) return false;
+        return Objects.equals(data, that.data) && Objects.equals(edges, that.edges);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, edges);
+    }
+
+    @Override
+    public String toString() {
+        return this.data.toString();
     }
 }
