@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.mesh;
 
+import ca.mcmaster.cas.se2aa4.a2.io.Structs;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.SoilAbsorptionProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.neighborhood.NeighborhoodRelation;
 import ca.mcmaster.cas.se2aa4.a2.island.neighborhood.TileNeighborhood;
