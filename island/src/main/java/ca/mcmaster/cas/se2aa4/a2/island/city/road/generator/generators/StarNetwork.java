@@ -46,7 +46,7 @@ public class StarNetwork extends AbstractRoadGenerator {
                         t1.getType().getGroup() == TileGroup.WATER ||
                         t1Paths.stream().anyMatch(p -> p.getType() == PathType.RIVER)
                 ) {
-                    weight = 100;
+                    weight = 1000;
                 }
 
                 graph.addNode(t1Centroid);
