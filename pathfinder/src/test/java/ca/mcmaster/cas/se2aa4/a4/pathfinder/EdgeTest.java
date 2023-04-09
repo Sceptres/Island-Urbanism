@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class EdgeTest {
     @Test
     public void edgeNodeTest() {
-        Edge edge;
+        Edge<String> edge;
 
         String n1 = "test1";
         String n2 = "test2";

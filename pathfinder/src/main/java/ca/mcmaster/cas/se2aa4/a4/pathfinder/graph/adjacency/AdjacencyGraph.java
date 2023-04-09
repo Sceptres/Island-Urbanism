@@ -17,15 +17,13 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     protected int numNodes;
     protected int numEdges;
     protected final boolean isWeighted;
-    protected final Class<T> dataClass;
-    protected final Map<T, Set<Edge>> graph;
-    protected final Map<Edge, Double> weightMap;
+    protected final Map<T, Set<Edge<T>>> graph;
+    protected final Map<Edge<T>, Double> weightMap;
 
-    protected AdjacencyGraph(Class<T> dataClass, boolean isWeighted) {
+    protected AdjacencyGraph(boolean isWeighted) {
         this.numNodes = 0;
         this.numEdges = 0;
         this.isWeighted = isWeighted;
-        this.dataClass = Objects.requireNonNull(dataClass);
         this.graph = new HashMap<>();
         this.weightMap = new HashMap<>();
     }
@@ -51,7 +49,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     @Override
     public void addNode(T t) {
         if (!this.graph.containsKey(t)) {
-            Set<Edge> set = new HashSet<>();
+            Set<Edge<T>> set = new HashSet<>();
             this.graph.put(t, set);
             this.numNodes++;
         }
@@ -65,10 +63,10 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     @Override
     public void removeNode(T t) {
         if (this.graph.containsKey(t)) {
-            Set<Edge> edges = this.graph.get(t);
+            Set<Edge<T>> edges = this.graph.get(t);
             this.graph.remove(t);
 
-            List<Edge> notRemovedEdges = this.getEdges().stream().filter(e -> e.getTargetNode().equals(t)).toList();
+            List<Edge<T>> notRemovedEdges = this.getEdges().stream().filter(e -> e.getTargetNode().equals(t)).toList();
             this.removeAllEdges(notRemovedEdges);
 
             this.numNodes--;
@@ -112,8 +110,8 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         }
 
         if(!this.hasEdge(t1, t2)) {
-            Edge edge = Edge.of(t1, t2);
-            Set<Edge> t1Edges = this.graph.get(t1);
+            Edge<T> edge = Edge.of(t1, t2);
+            Set<Edge<T>> t1Edges = this.graph.get(t1);
             t1Edges.add(edge);
             this.weightMap.put(edge, 1d);
             this.numEdges++;
@@ -121,31 +119,31 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public void addEdge(Edge edge) {
+    public void addEdge(Edge<T> edge) {
         T source = this.getEdgeSourceNode(edge);
         T target = this.getEdgeTargetNode(edge);
         this.addEdge(source, target);
     }
 
     @Override
-    public void addAllEdges(Collection<? extends Edge> edges) {
+    public void addAllEdges(Collection<? extends Edge<T>> edges) {
         edges.forEach(this::addEdge);
     }
 
     @Override
-    public void setEdgeWeight(Edge edge, double weight) {
+    public void setEdgeWeight(Edge<T> edge, double weight) {
         if(this.isWeighted)
             this.weightMap.put(edge, weight);
     }
 
     @Override
     public void setEdgeWeight(T t1, T t2, double weight) {
-        Edge edge = this.getEdge(t1, t2);
+        Edge<T> edge = this.getEdge(t1, t2);
         this.setEdgeWeight(edge, weight);
     }
 
     @Override
-    public double getEdgeWeight(Edge edge) {
+    public double getEdgeWeight(Edge<T> edge) {
         if(!this.getEdges().contains(edge)) {
             String message = String.format("The edge %s does not exist in this graph!", edge);
             throw new IllegalArgumentException(message);
@@ -154,7 +152,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public void removeEdge(Edge edge) {
+    public void removeEdge(Edge<T> edge) {
         T source = this.getEdgeSourceNode(edge);
         T target = this.getEdgeTargetNode(edge);
         this.removeEdge(source, target);
@@ -179,12 +177,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     protected abstract void specificRemoveEdge(T t1, T t2);
 
     @Override
-    public void removeAllEdges(Collection<? extends Edge> edges) {
+    public void removeAllEdges(Collection<? extends Edge<T>> edges) {
         edges.forEach(this::removeEdge);
     }
 
     @Override
-    public void removeEdgesIf(Predicate<Edge> predicate) {
+    public void removeEdgesIf(Predicate<Edge<T>> predicate) {
         this.getEdges().forEach(e -> {
             if(predicate.test(e)) {
                 this.removeEdge(e);
@@ -193,23 +191,23 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public List<Edge> getEdges() {
+    public List<Edge<T>> getEdges() {
         return this.graph.values().stream().flatMap(Set::stream).toList();
     }
 
     @Override
-    public T getEdgeSourceNode(Edge edge) {
-        return this.dataClass.cast(edge.getSourceNode());
+    public T getEdgeSourceNode(Edge<T> edge) {
+        return edge.getSourceNode();
     }
 
     @Override
-    public T getEdgeTargetNode(Edge edge) {
-        return this.dataClass.cast(edge.getTargetNode());
+    public T getEdgeTargetNode(Edge<T> edge) {
+        return edge.getTargetNode();
     }
 
     @Override
-    public Edge getEdge(T t1, T t2) {
-        Optional<Edge> edgeOptional = this.getEdges().stream()
+    public Edge<T> getEdge(T t1, T t2) {
+        Optional<Edge<T>> edgeOptional = this.getEdges().stream()
                 .filter(e -> e.getSourceNode().equals(t1) && e.getTargetNode().equals(t2))
                 .findFirst();
         if(edgeOptional.isPresent()) {
@@ -221,7 +219,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public abstract List<Edge> getNodeEdges(T t);
+    public abstract List<Edge<T>> getNodeEdges(T t);
 
     @Override
     public boolean hasEdge(T t1, T t2) {
@@ -234,7 +232,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public boolean hasEdge(Edge edge) {
+    public boolean hasEdge(Edge<T> edge) {
         T source = this.getEdgeSourceNode(edge);
         T target = this.getEdgeTargetNode(edge);
         return this.hasEdge(source, target);
@@ -250,9 +248,9 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         for(T t : this.graph.keySet()) {
             builder.append(String.format("\t%s => [", t));
 
-            Set<Edge> edges = this.graph.get(t);
+            Set<Edge<T>> edges = this.graph.get(t);
 
-            for(Edge edge : edges) {
+            for(Edge<T> edge : edges) {
                 builder.append(String.format("(%s):", edge));
                 builder.append(String.format("%.2f", this.getEdgeWeight(edge)));
                 builder.append(", ");

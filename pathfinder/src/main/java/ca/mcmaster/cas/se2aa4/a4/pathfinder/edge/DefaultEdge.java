@@ -2,22 +2,22 @@ package ca.mcmaster.cas.se2aa4.a4.pathfinder.edge;
 
 import java.util.Objects;
 
-class DefaultEdge implements Edge {
-    private final Object source;
-    private final Object target;
+class DefaultEdge<T> implements Edge<T> {
+    private final T source;
+    private final T target;
 
-    DefaultEdge(Object source, Object target) {
+    DefaultEdge(T source, T target) {
         this.source = source;
         this.target = target;
     }
 
     @Override
-    public Object getSourceNode() {
+    public T getSourceNode() {
         return this.source;
     }
 
     @Override
-    public Object getTargetNode() {
+    public T getTargetNode() {
         return this.target;
     }
 
@@ -29,7 +29,7 @@ class DefaultEdge implements Edge {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DefaultEdge that)) return false;
+        if (!(o instanceof DefaultEdge<?> that)) return false;
         return Objects.equals(source, that.source) && Objects.equals(target, that.target);
     }
 

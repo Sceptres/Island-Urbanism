@@ -16,51 +16,55 @@ public class ShortestPathTest {
 
     @Test
     public void directedUnweightedShortestPathTest() {
-        this.graph = new DirectedGraph<>(Integer.class);
+        this.graph = new DirectedGraph<>();
         this.fillGraph(false);
 
-        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph);
+        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph, 3);
 
-        List<Integer> path39 = shortestPath.calculatePath(3, 9);
+        List<Integer> path39 = shortestPath.findPath(9);
         assertEquals(List.of(3, 8, 5, 9), path39);
 
-        List<Integer> path09 = shortestPath.calculatePath(0, 9);
+        shortestPath = new ShortestPath<>(this.graph, 0);
+
+        List<Integer> path09 = shortestPath.findPath(9);
         assertEquals(List.of(), path09);
     }
 
     @Test
     public void directedWeightedShortestPathTest() {
-        this.graph = new DirectedGraph<>(Integer.class, true);
+        this.graph = new DirectedGraph<>(true);
         this.fillGraph(true);
 
-        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph);
+        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph, 3);
 
-        List<Integer> path30 = shortestPath.calculatePath(3, 0);
+        List<Integer> path30 = shortestPath.findPath(0);
         assertEquals(List.of(3, 0), path30);
 
-        List<Integer> path09 = shortestPath.calculatePath(0, 9);
+        shortestPath = new ShortestPath<>(this.graph, 0);
+
+        List<Integer> path09 = shortestPath.findPath(9);
         assertEquals(List.of(), path09);
     }
 
     @Test
     public void undirectedUnweightedShortestPathTest() {
-        this.graph = new UnDirectedGraph<>(Integer.class);
+        this.graph = new UnDirectedGraph<>();
         this.fillGraph(false);
 
-        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph);
+        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph, 3);
 
-        List<Integer> path36 = shortestPath.calculatePath(3, 6);
+        List<Integer> path36 = shortestPath.findPath(6);
         assertEquals(List.of(3, 0, 9, 6), path36);
     }
 
     @Test
     public void undirectedWeightedShortestPathTest() {
-        this.graph = new UnDirectedGraph<>(Integer.class, true);
+        this.graph = new UnDirectedGraph<>(true);
         this.fillGraph(true);
 
-        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph);
+        PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph, 3);
 
-        List<Integer> path36 = shortestPath.calculatePath(3, 6);
+        List<Integer> path36 = shortestPath.findPath(6);
         assertEquals(List.of(3, 8, 1, 5, 6), path36);
     }
 

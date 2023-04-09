@@ -1,25 +1,25 @@
 package ca.mcmaster.cas.se2aa4.a4.pathfinder.edge;
 
-public interface Edge {
+public interface Edge<T> {
     /**
      *
-     * @param o1
-     * @param o2
-     * @return
+     * @param t1 The source node of the edge
+     * @param t2 The target node of the edge
+     * @return The edge with the given nodes
      */
-    static Edge of(Object o1, Object o2) {
-        return new DefaultEdge(o1, o2);
+    static <T> Edge<T> of(T t1, T t2) {
+        return new DefaultEdge<>(t1, t2);
     }
 
     /**
      *
      * @return The source node of the edge
      */
-    Object getSourceNode();
+    T getSourceNode();
 
     /**
      *
      * @return The target node of the edge
      */
-    Object getTargetNode();
+    T getTargetNode();
 }
