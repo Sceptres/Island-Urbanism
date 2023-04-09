@@ -21,7 +21,12 @@ public class DefaultNode<T> implements Node<T> {
 
     @Override
     public void addEdge(Edge<T> edge) throws IllegalArgumentException {
+        this.edges.add(edge);
+    }
 
+    @Override
+    public void removeEdge(Edge<T> edge) {
+        this.edges.remove(edge);
     }
 
     @Override
@@ -33,12 +38,12 @@ public class DefaultNode<T> implements Node<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof DefaultNode<?> that)) return false;
-        return Objects.equals(data, that.data) && Objects.equals(edges, that.edges);
+        return Objects.equals(data, that.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(data, edges);
+        return Objects.hash(data);
     }
 
     @Override

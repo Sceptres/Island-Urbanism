@@ -28,6 +28,8 @@ public interface Node<T> {
      */
     void addEdge(Edge<T> edge) throws IllegalArgumentException;
 
+    void removeEdge(Edge<T> edge);
+
     /**
      *
      * @return The list of {@link Edge} that this node is a source to

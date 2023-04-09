@@ -17,7 +17,7 @@ public class EdgeTest {
 
         edge = Edge.of(n1, n2);
 
-        assertEquals(n1, edge.getSourceNode());
-        assertEquals(n2, edge.getTargetNode());
+        assertEquals(n1, edge.getSourceNodeData());
+        assertEquals(n2, edge.getTargetNodeData());
     }
 }
