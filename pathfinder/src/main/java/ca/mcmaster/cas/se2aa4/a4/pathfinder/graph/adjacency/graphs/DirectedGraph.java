@@ -18,14 +18,13 @@ public class DirectedGraph<T> extends AdjacencyGraph<T> {
 
     @Override
     protected void specificRemoveEdge(Node<T> t1, Node<T> t2) {
-        Edge<T> edge = Edge.of(t1, t2);
+        Edge<T> edge = Edge.of(t1, t2, super.isWeighted);
         t1.removeEdge(edge);
-        super.weightMap.remove(edge);
     }
 
     @Override
     public boolean checkEdges(Node<T> n1, Node<T> n2) {
         List<Edge<T>> nodeEdges = n1.getEdges();
-        return nodeEdges.contains(Edge.of(n1, n2));
+        return nodeEdges.contains(Edge.of(n1, n2, super.isWeighted));
     }
 }

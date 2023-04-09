@@ -35,25 +35,12 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
     }
 
     @Override
-    public void setEdgeWeight(Edge<T> edge, double weight) {
-        super.setEdgeWeight(edge, weight);
-
-        T t1 = super.getEdgeSourceNode(edge);
-        T t2 = super.getEdgeTargetNode(edge);
-        Edge<T> edge1 = super.getEdge(t2, t1);
-        super.setEdgeWeight(edge1, weight);
-    }
-
-    @Override
     protected void specificRemoveEdge(Node<T> n1, Node<T> n2) {
-        Edge<T> t1EdgeRemove = Edge.of(n1, n2);
-        Edge<T> t2EdgeRemove = Edge.of(n2, n1);
+        Edge<T> t1EdgeRemove = Edge.of(n1, n2, super.isWeighted);
+        Edge<T> t2EdgeRemove = Edge.of(n2, n1, super.isWeighted);
 
         n1.removeEdge(t1EdgeRemove);
         n2.removeEdge(t2EdgeRemove);
-
-        super.weightMap.remove(t1EdgeRemove);
-        super.weightMap.remove(t2EdgeRemove);
     }
 
     @Override
@@ -63,5 +50,11 @@ public class UnDirectedGraph<T> extends AdjacencyGraph<T> {
         boolean t1Contains = n1Edges.stream().anyMatch(e -> n2.equals(e.getTargetNode()));
         boolean t2Contains = n2Edges.stream().anyMatch(e -> n1.equals(e.getTargetNode()));
         return t1Contains && t2Contains;
+    }
+
+    @Override
+    public void setEdgeWeight(T t1, T t2, double weight) {
+        super.setEdgeWeight(t1, t2, weight);
+        super.setEdgeWeight(t2, t1, weight);
     }
 }

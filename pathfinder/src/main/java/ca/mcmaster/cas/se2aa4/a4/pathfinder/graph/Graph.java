@@ -94,13 +94,6 @@ public interface Graph<T> {
 
     /**
      *
-     * @param edge The {@link Edge} to set weight of
-     * @param weight The weight to set the edge to
-     */
-    void setEdgeWeight(Edge<T> edge, double weight);
-
-    /**
-     *
      * @param t1 The source node of the edge to set weight of
      * @param t2 The target node of the edge to set weight of
      * @param weight The weight of the edge
@@ -109,10 +102,11 @@ public interface Graph<T> {
 
     /**
      *
-     * @param edge The {@link Edge} to get weight of
+     * @param t1 The source node of the {@link Edge}
+     * @param t2 The target node of the {@link Edge}
      * @return The weight of the given edge
      */
-    double getEdgeWeight(Edge<T> edge);
+    double getEdgeWeight(T t1, T t2);
 
     /**
      *
@@ -181,13 +175,6 @@ public interface Graph<T> {
      * @return True if there already exists an edge connecting these nodes. False otherwise.
      */
     boolean hasEdge(T t1, T t2);
-
-    /**
-     *
-     * @param edge The {@link Edge} to check for
-     * @return True if the edge exists. False otherwise.
-     */
-    boolean hasEdge(Edge<T> edge);
 
     /**
      *

@@ -20,14 +20,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     protected int numEdges;
     protected final boolean isWeighted;
     protected final Set<Node<T>> graph;
-    protected final Map<Edge<T>, Double> weightMap;
 
     protected AdjacencyGraph(boolean isWeighted) {
         this.numNodes = 0;
         this.numEdges = 0;
         this.isWeighted = isWeighted;
         this.graph = new HashSet<>();
-        this.weightMap = new HashMap<>();
     }
 
     @Override
@@ -40,7 +38,6 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         this.numNodes = 0;
         this.numEdges = 0;
         this.graph.clear();
-        this.weightMap.clear();
     }
 
     @Override
@@ -123,9 +120,8 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         if(!this.hasEdge(t1, t2)) {
             Node<T> node1 = this.getNode(t1);
             Node<T> node2 = this.getNode(t2);
-            Edge<T> edge = Edge.of(node1, node2);
+            Edge<T> edge = Edge.of(node1, node2, this.isWeighted);
             node1.addEdge(edge);
-            this.weightMap.put(edge, 1d);
             this.numEdges++;
         }
     }
@@ -149,24 +145,20 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
     }
 
     @Override
-    public void setEdgeWeight(Edge<T> edge, double weight) {
-        if(this.isWeighted)
-            this.weightMap.put(edge, weight);
-    }
-
-    @Override
     public void setEdgeWeight(T t1, T t2, double weight) {
         Edge<T> edge = this.getEdge(t1, t2);
-        this.setEdgeWeight(edge, weight);
+        edge.setWeight(weight);
     }
 
     @Override
-    public double getEdgeWeight(Edge<T> edge) {
-        if(!this.getEdges().contains(edge)) {
+    public double getEdgeWeight(T t1, T t2) {
+        if(!this.hasEdge(t1, t2)) {
+            Edge<T> edge = Edge.of(t1, t2, this.isWeighted);
             String message = String.format("The edge %s does not exist in this graph!", edge);
             throw new IllegalArgumentException(message);
         }
-        return this.weightMap.get(edge);
+        Edge<T> edge = this.getEdge(t1, t2);
+        return edge.getWeight();
     }
 
     @Override
@@ -178,7 +170,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
     @Override
     public void removeEdge(T t1, T t2) {
-        if(!this.getEdges().contains(Edge.of(t1, t2))) {
+        if(!this.getEdges().contains(Edge.of(t1, t2, this.isWeighted))) {
             String message = String.format("Nodes %s and %s do not exist in the graph!", t1, t2);
             throw new IllegalArgumentException(message);
         }
@@ -254,13 +246,12 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         return this.checkEdges(node1, node2);
     }
 
-    @Override
-    public boolean hasEdge(Edge<T> edge) {
-        T source = this.getEdgeSourceNode(edge);
-        T target = this.getEdgeTargetNode(edge);
-        return false;
-    }
-
+    /**
+     *
+     * @param n1 The first {@link Node} of the {@link Edge} to check
+     * @param n2 The second {@link Node} of the {@link Edge} to check
+     * @return True if the edge exists. False otherwise.
+     */
     protected abstract boolean checkEdges(Node<T> n1, Node<T> n2);
 
     @Override
@@ -275,7 +266,7 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
 
             for(Edge<T> edge : edges) {
                 builder.append(String.format("(%s):", edge));
-                builder.append(String.format("%.2f", this.getEdgeWeight(edge)));
+                builder.append(String.format("%.2f", edge.getWeight()));
                 builder.append(", ");
             }
 
@@ -298,7 +289,6 @@ public abstract class AdjacencyGraph<T> implements Graph<T> {
         return numNodes == that.numNodes &&
                numEdges == that.numEdges &&
                isWeighted == that.isWeighted &&
-               Objects.equals(weightMap, that.weightMap) &&
                Objects.equals(graph, that.graph);
     }
 

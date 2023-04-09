@@ -9,8 +9,8 @@ public interface Edge<T> {
      * @param t2 The target node of the edge
      * @return The edge with the given nodes
      */
-    static <T> Edge<T> of(T t1, T t2) {
-        return new DefaultEdge<>(t1, t2);
+    static <T> Edge<T> of(T t1, T t2, boolean isWeighted) {
+        return new DefaultEdge<>(t1, t2, isWeighted);
     }
 
     /**
@@ -19,8 +19,8 @@ public interface Edge<T> {
      * @param n2 The target node of the edge
      * @return The edge with the given nodes
      */
-    static <T> Edge<T> of(Node<T> n1, Node<T> n2) {
-        return new DefaultEdge<>(n1, n2);
+    static <T> Edge<T> of(Node<T> n1, Node<T> n2, boolean isWeighted) {
+        return new DefaultEdge<>(n1, n2, isWeighted);
     }
 
     /**
@@ -46,4 +46,8 @@ public interface Edge<T> {
      * @return The data that the target {@link Node} of the edge holds
      */
     T getTargetNodeData();
+
+    double getWeight();
+
+    void setWeight(double weight);
 }

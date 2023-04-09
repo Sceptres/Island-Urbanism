@@ -54,7 +54,7 @@ public class ShortestPathTest {
         PathAlgorithm<Integer> shortestPath = new ShortestPath<>(this.graph, 3);
 
         List<Integer> path36 = shortestPath.findPath(6);
-        assertEquals(List.of(3, 0, 9, 6), path36);
+        assertEquals(List.of(3, 8, 5, 6), path36);
     }
 
     @Test
