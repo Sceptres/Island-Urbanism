@@ -2,8 +2,12 @@ package ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.generators;
 
 import ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.AbstractRoadGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
+import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
+import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
+import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.Graph;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.adjacency.graphs.UnDirectedGraph;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.path.PathAlgorithm;
@@ -14,29 +18,43 @@ import java.util.Comparator;
 import java.util.List;
 
 public class StarNetwork extends AbstractRoadGenerator {
-    public StarNetwork(Land land) {
-        super(land);
+    public StarNetwork(IslandMesh mesh, Land land) {
+        super(mesh, land);
     }
 
     @Override
-    protected Graph<Point> generateGraph(Land land) {
-        Graph<Point> graph = new UnDirectedGraph<>(Point.class, true);
+    protected Graph<Point> generateGraph(List<Tile> tiles, List<Path> paths, List<Point> points, List<Point> cities) {
+        Graph<Point> graph = new UnDirectedGraph<>(true);
 
-        super.points.parallelStream().unordered().forEach(point -> {
+        tiles.parallelStream().forEach(t -> {
+            Point tCentroid = t.getCentroid();
             synchronized(graph) {
-                graph.addNode(point);
+                graph.addNode(tCentroid);
             }
 
-            List<Path> pointPaths = super.paths.stream().filter(p -> p.hasPoint(point)).toList();
-            pointPaths.forEach(p -> {
-                Point p1 = p.getP1();
-                Point p2 = p.getP2();
-                Point connectedPoint = p1.equals(point) ? p2 : p1;
+            List<Path> tPaths = t.getPaths();
+
+            List<Tile> neighbors = t.getNeighbors();
+            neighbors.forEach(t1 -> {
+                Point t1Centroid = t1.getCentroid();
+                List<Path> t1Paths = t1.getPaths();
+
+                t1Paths.retainAll(tPaths);
+
+                double weight = (t.getElevation() + t1.getElevation()) / 2;
+
+                if(
+                        t.getType().getGroup() == TileGroup.WATER ||
+                        t1.getType().getGroup() == TileGroup.WATER ||
+                        t1Paths.stream().anyMatch(p -> p.getType() == PathType.RIVER)
+                ) {
+                    weight = 100;
+                }
 
                 synchronized(graph) {
-                    graph.addNode(connectedPoint);
-                    graph.addEdge(point, connectedPoint);
-                    graph.setEdgeWeight(point, connectedPoint, p.getElevation()*100);
+                    graph.addNode(t1Centroid);
+                    graph.addEdge(tCentroid, t1Centroid);
+                    graph.setEdgeWeight(tCentroid, t1Centroid, weight);
                 }
             });
         });
@@ -45,15 +63,21 @@ public class StarNetwork extends AbstractRoadGenerator {
     }
 
     @Override
-    protected List<List<Point>> generateRoads(Graph<Point> graph) {
+    protected List<List<Point>> generateRoads(Graph<Point> graph, List<Point> cities) {
         List<List<Point>> roads = new ArrayList<>();
 
-        PathAlgorithm<Point> roadFinder = new ShortestPath<>(graph);
-        Point city = super.cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
+        Point city = cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
 
-        List<Point> otherCities = super.cities.stream().filter(p -> !p.equals(city)).toList();
+        long start = System.currentTimeMillis();
+        PathAlgorithm<Point> roadFinder = new ShortestPath<>(graph, city);
+        long end = System.currentTimeMillis();
+
+        System.out.printf("Pathfinder: %d ms\n", (end-start));
+
+        List<Point> otherCities = cities.stream().filter(p -> !p.equals(city)).toList();
         otherCities.parallelStream().unordered().forEach(c -> {
-            List<Point> path = roadFinder.calculatePath(city, c);
+            List<Point> path = roadFinder.findPath(c);
+
             synchronized(roads) {
                 roads.add(path);
             }

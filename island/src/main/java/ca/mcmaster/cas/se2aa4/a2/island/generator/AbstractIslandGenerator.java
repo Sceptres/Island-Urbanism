@@ -73,7 +73,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
 
-        this.generateCities(land, this.rand, 15);
+        this.generateCities(land, this.rand, 200);
     }
 
     /**
@@ -174,7 +174,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         List<Point> cities = cityGenerator.generate(random, numCities);
         cities.forEach(land::addCity);
 
-        RoadGenerator roadGenerator = new StarNetwork(land);
+        RoadGenerator roadGenerator = new StarNetwork(this.mesh, land);
         roadGenerator.generate();
 
         long endTime = System.currentTimeMillis();

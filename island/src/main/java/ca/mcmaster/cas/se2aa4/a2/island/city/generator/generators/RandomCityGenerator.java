@@ -24,7 +24,7 @@ public class RandomCityGenerator extends AbstractCityGenerator {
         List<Point> points = new ArrayList<>();
 
         List<Tile> tiles = land.getTiles().stream().filter(t -> t.getType().getGroup() != TileGroup.WATER).toList();
-        List<Point> cityPoints = Util.getTilePoints(tiles).stream().filter(Point::canCity).collect(Collectors.toList());
+        List<Point> cityPoints =tiles.stream().map(Tile::getCentroid).filter(Point::canCity).collect(Collectors.toList());
 
         for(int i=0; i < numCities; i++) {
             int randomIdx = random.nextInt(cityPoints.size());

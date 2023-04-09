@@ -1,7 +1,6 @@
 import ca.mcmaster.cas.se2aa4.a2.island.cli.IslandInputHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.generator.IslandGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.hook.Hook;
-import ca.mcmaster.cas.se2aa4.a2.island.hook.hooks.HeatMap;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.SoilAbsorptionProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.io.MeshReader;
 import ca.mcmaster.cas.se2aa4.a2.island.io.MeshWriter;
@@ -13,6 +12,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        long start = System.currentTimeMillis();
         try {
             InputHandler handler = IslandInputHandler.getInputHandler(args);
 
@@ -36,5 +36,7 @@ public class Main {
         } catch(IllegalInputException e) {
             System.exit(1);
         }
+        long end = System.currentTimeMillis();
+        System.out.printf("Island generation: %d s\n", (end-start)/1000);
     }
 }

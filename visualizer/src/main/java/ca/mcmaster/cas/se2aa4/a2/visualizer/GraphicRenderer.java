@@ -43,19 +43,20 @@ public class GraphicRenderer {
         });
 
         // Render vertices
-        mesh.getNonCentroidVertices().forEach(vertex -> {
+        mesh.getVertices().forEach(vertex -> {
             if(this.isDebug) {
-                vertex.setColor(Color.BLACK);
+                if(vertex.isCentroid())
+                    vertex.setColor(Color.GRAY);
+                else
+                    vertex.setColor(Color.BLACK);
+
+                vertex.setThickness(3);
             }
             vertex.render(canvas);
         });
 
         if(this.isDebug) {
             debugSegments.forEach(s -> s.render(canvas));
-            mesh.getCentroidVertices().forEach(vertex -> {
-                vertex.setColor(Color.GRAY);
-                vertex.render(canvas);
-            });
         }
     }
 }
