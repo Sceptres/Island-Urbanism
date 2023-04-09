@@ -35,11 +35,11 @@ public class ShortestPath<T> extends AbstractPathAlgorithm<T> {
             T m = q.poll().e1();
             List<Edge<T>> nodeEdges = graph.getNodeEdges(m);
             for(Edge<T> edge : nodeEdges) {
-                T n = graph.getEdgeTargetNode(edge);
+                T n = edge.getTargetNodeData();
 
                 double mCost = costs.get(m);
                 double nCost = costs.get(n);
-                double weight = graph.getEdgeWeight(edge);
+                double weight = edge.getWeight();
 
                 if(mCost + weight < nCost) {
                     paths.put(n, m);
