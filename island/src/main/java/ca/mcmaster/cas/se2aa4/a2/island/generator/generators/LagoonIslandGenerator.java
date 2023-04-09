@@ -14,8 +14,16 @@ import java.util.List;
 import java.util.Random;
 
 public class LagoonIslandGenerator extends AbstractIslandGenerator {
-    public LagoonIslandGenerator(IslandMesh mesh, Shape shape, Biome biome, long seed, int numAquifers, int numRivers) {
-        super(mesh, shape, new LagoonAltimeter(), biome, seed, 1, numAquifers, numRivers);
+    public LagoonIslandGenerator(
+            IslandMesh mesh,
+            Shape shape,
+            Biome biome,
+            long seed,
+            int numAquifers,
+            int numRivers,
+            int numCities
+    ) {
+        super(mesh, shape, new LagoonAltimeter(), biome, seed, 1, numAquifers, numRivers, numCities);
     }
 
     @Override

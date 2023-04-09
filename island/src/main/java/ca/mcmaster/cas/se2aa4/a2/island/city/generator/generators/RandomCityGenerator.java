@@ -1,9 +1,7 @@
 package ca.mcmaster.cas.se2aa4.a2.island.city.generator.generators;
 
-import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.city.generator.AbstractCityGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
-import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
@@ -34,9 +32,7 @@ public class RandomCityGenerator extends AbstractCityGenerator {
             float citySize = random.nextFloat(5, 10);
             point.setThickness(citySize);
 
-            List<Path> paths = land.getPaths().stream().filter(p -> p.hasPoint(point)).toList();
-            List<Point> ineligiblePoints = Util.getPathPoints(paths);
-            cityPoints.removeAll(ineligiblePoints);
+            cityPoints.remove(point);
 
             points.add(point);
         }

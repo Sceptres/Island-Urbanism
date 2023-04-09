@@ -110,16 +110,17 @@ public class IslandInputHandler {
 
         int numAquifers = IslandInputHandler.getNumAquifers(handler);
         int numRivers = IslandInputHandler.getNumRivers(handler);
+        int numCities = IslandInputHandler.getNumCities(handler);
         long seed = IslandInputHandler.getSeed(handler);
         Shape shape = IslandInputHandler.getShapeInput(handler, meshCenter, diagonalLength);
         Biome biome = IslandInputHandler.getBiomeOption(handler);
 
         if(mode.equals("lagoon"))
-            generator = new LagoonIslandGenerator(mesh, shape, biome, seed, numAquifers, numRivers);
+            generator = new LagoonIslandGenerator(mesh, shape, biome, seed, numAquifers, numRivers, numCities);
         else if(mode.equals("random")) {
             int numLakes = IslandInputHandler.getNumLakes(handler);
             AltimeterProfile altimeterProfile = IslandInputHandler.getAltimeterInput(handler);
-            generator = new RandomIslandGenerator(mesh, shape, biome, altimeterProfile, seed, numLakes, numAquifers, numRivers);
+            generator = new RandomIslandGenerator(mesh, shape, biome, altimeterProfile, seed, numLakes, numAquifers, numRivers, numCities);
         } else
             handler.printHelp("Invalid mode: " + mode);
 

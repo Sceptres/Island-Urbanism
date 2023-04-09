@@ -13,6 +13,7 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGene
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
+import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
@@ -26,6 +27,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
     private final Random rand;
     private final long seed;
     private final int numLakes;
+    private final int numCities;
     private final int numRivers;
     private final int numAquifers;
     private final Shape shape;
@@ -41,7 +43,8 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
             long seed,
             int numLakes,
             int numAquifers,
-            int numRivers
+            int numRivers,
+            int numCities
     ) {
         this.land = new Land();
         this.ocean = new Ocean();
@@ -54,6 +57,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.numLakes = numLakes;
         this.numRivers = numRivers;
         this.numAquifers = numAquifers;
+        this.numCities = numCities;
     }
 
     @Override
@@ -73,7 +77,11 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
 
-        this.generateCities(land, this.rand, 100);
+        System.out.println(land.getTiles().stream().filter(t -> t.getType().getGroup() != TileGroup.WATER).count());
+
+        this.generateCities(land, this.rand, this.numCities);
+
+        System.out.println(this.mesh.getPoints().stream().filter(p -> p.getType() == PointType.CITY).count());
     }
 
     /**
