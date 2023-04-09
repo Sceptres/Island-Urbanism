@@ -402,10 +402,10 @@ public class IslandInputHandler {
             if(numCities < 0)
                 throw new IllegalArgumentException();
         } catch(NumberFormatException e) {
-            String message = String.format("Invalid number of rivers %s!", value);
+            String message = String.format("Invalid number of cities %s!", value);
             handler.printHelp(message);
         } catch(IllegalArgumentException e) {
-            handler.printHelp("Cannot have a negative number of rivers!");
+            handler.printHelp("Cannot have a negative number of cities!");
         }
 
         return numCities;
