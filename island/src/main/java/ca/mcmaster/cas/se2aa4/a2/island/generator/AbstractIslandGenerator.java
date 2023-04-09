@@ -13,7 +13,6 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGene
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
-import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
@@ -76,12 +75,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateRivers(this.rand, this.land, this.ocean, this.numRivers);
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
-
-        System.out.println(land.getTiles().stream().filter(t -> t.getType().getGroup() != TileGroup.WATER).count());
-
         this.generateCities(land, this.rand, this.numCities);
-
-        System.out.println(this.mesh.getPoints().stream().filter(p -> p.getType() == PointType.CITY).count());
     }
 
     /**
