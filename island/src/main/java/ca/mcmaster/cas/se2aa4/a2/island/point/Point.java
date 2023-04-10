@@ -105,6 +105,6 @@ public final class Point implements Positionable<Double>, IElevation, Thickenabl
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, vertex);
+        return Objects.hash(vertex);
     }
 }
