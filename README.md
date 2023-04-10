@@ -71,6 +71,7 @@ mosser@azrael island % ls -lh island.mesh
 mosser@azrael island % 
 ```
 
+### Cities
 Cities generated are connected through a star network. The black lines represents the roads between the cities. The dark grey
 dots represent the cities. Roads over bodies of water are ignored unless it is absolutely necessary. The elevation profile
 of the island is also taken into account to find the cheapest path between the cities. The red city represents the
