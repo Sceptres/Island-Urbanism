@@ -6,6 +6,7 @@ import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
 import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
+import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 import ca.mcmaster.cas.se2aa4.a4.pathfinder.graph.Graph;
@@ -63,6 +64,7 @@ public class StarNetwork extends AbstractRoadGenerator {
         List<List<Point>> roads = new ArrayList<>();
 
         Point city = cities.stream().max(Comparator.comparing(Point::getThickness, Float::compareTo)).get();
+        city.setType(PointType.CAPITAL);
 
         PathAlgorithm<Point> roadFinder = new ShortestPath<>(graph, city);
 

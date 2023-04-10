@@ -45,4 +45,5 @@ public class Colors {
      * Point colors
      */
     public static final Color CITY_COLOR = Color.GRAY;
+    public static final Color CAPITAL_COLOR = Color.RED;
 }
