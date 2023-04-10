@@ -29,7 +29,7 @@ public class RandomCityGenerator extends AbstractCityGenerator {
             Point point = cityPoints.get(randomIdx);
             point.setType(PointType.CITY);
 
-            float citySize = random.nextFloat(5, 10);
+            float citySize = random.nextFloat(5, 9);
             point.setThickness(citySize);
 
             cityPoints.remove(point);
