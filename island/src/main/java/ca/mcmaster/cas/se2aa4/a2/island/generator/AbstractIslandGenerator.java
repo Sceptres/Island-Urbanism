@@ -1,6 +1,10 @@
 package ca.mcmaster.cas.se2aa4.a2.island.generator;
 
 import ca.mcmaster.cas.se2aa4.a2.island.biome.Biome;
+import ca.mcmaster.cas.se2aa4.a2.island.city.generator.CityGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.generator.generators.RandomCityGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.RoadGenerator;
+import ca.mcmaster.cas.se2aa4.a2.island.city.road.generator.generators.StarNetwork;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.altimetry.AltimeterProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Land;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.Ocean;
@@ -8,6 +12,7 @@ import ca.mcmaster.cas.se2aa4.a2.island.geography.River;
 import ca.mcmaster.cas.se2aa4.a2.island.geography.generator.generators.RiverGenerator;
 import ca.mcmaster.cas.se2aa4.a2.island.geometry.Shape;
 import ca.mcmaster.cas.se2aa4.a2.island.mesh.IslandMesh;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 
@@ -21,6 +26,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
     private final Random rand;
     private final long seed;
     private final int numLakes;
+    private final int numCities;
     private final int numRivers;
     private final int numAquifers;
     private final Shape shape;
@@ -36,7 +42,8 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
             long seed,
             int numLakes,
             int numAquifers,
-            int numRivers
+            int numRivers,
+            int numCities
     ) {
         this.land = new Land();
         this.ocean = new Ocean();
@@ -49,6 +56,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.numLakes = numLakes;
         this.numRivers = numRivers;
         this.numAquifers = numAquifers;
+        this.numCities = numCities;
     }
 
     @Override
@@ -67,6 +75,7 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
         this.generateRivers(this.rand, this.land, this.ocean, this.numRivers);
         this.generateHumidity(this.land);
         this.biomeHandling(this.land, this.biome);
+        this.generateCities(land, this.rand, this.numCities);
     }
 
     /**
@@ -153,5 +162,19 @@ public abstract class AbstractIslandGenerator implements IslandGenerator {
      */
     private void biomeHandling(Land land, Biome biome) {
         land.getTiles().forEach(biome::takeTile);
+    }
+
+    /**
+     *
+     * @param land The {@link Land} of the island
+     * @param numCities The number of cities to generate
+     */
+    private void generateCities(Land land, Random random, int numCities) {
+        CityGenerator cityGenerator = new RandomCityGenerator(land);
+        List<Point> cities = cityGenerator.generate(random, numCities);
+        cities.forEach(land::addCity);
+
+        RoadGenerator roadGenerator = new StarNetwork(this.mesh, land);
+        roadGenerator.generate();
     }
 }

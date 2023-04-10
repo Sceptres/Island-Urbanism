@@ -24,9 +24,10 @@ public class RandomIslandGenerator extends AbstractIslandGenerator {
             long seed,
             int numLakes,
             int numAquifers,
-            int numRivers
+            int numRivers,
+            int numCities
     ) {
-        super(mesh, shape, profile, biome, seed, numLakes, numAquifers, numRivers);
+        super(mesh, shape, profile, biome, seed, numLakes, numAquifers, numRivers, numCities);
     }
 
     @Override

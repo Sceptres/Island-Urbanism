@@ -6,10 +6,10 @@ import ca.mcmaster.cas.se2aa4.a2.island.humidity.IHumidity;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.profiles.HumidityProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileType;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.datastructures.UniqueList;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 import org.jgrapht.GraphPath;
 import org.jgrapht.Graphs;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
@@ -23,16 +23,16 @@ import java.util.Set;
 
 public class River extends TiledGeography implements IHumidity {
 
-    private Vertex end;
+    private Point end;
     private final float flow;
-    private final List<Vertex> start;
+    private final List<Point> start;
     private final Set<Tile> tiles;
     private final Set<Path> riverPath;
-    private final DefaultDirectedGraph<Vertex, DefaultEdge> riverGraph;
+    private final DefaultDirectedGraph<Point, DefaultEdge> riverGraph;
     private final ElevationHandler elevationHandler;
     private final HumidityProfile humidityProfile;
 
-    public River(Vertex start, float flow){
+    public River(Point start, float flow){
         super(TileType.LAND_WATER);
         this.start = new UniqueList<>();
         this.start.add(start);
@@ -50,25 +50,25 @@ public class River extends TiledGeography implements IHumidity {
 
     /**
      *
-     * @return The {@link Vertex} where river starts
+     * @return The {@link Point} where river starts
      */
-    public List<Vertex> getStartVertices() {
+    public List<Point> getStartVertices() {
         return new ArrayList<>(this.start);
     }
 
     /**
      *
-     * @return The end {@link Vertex}
+     * @return The end {@link Point}
      */
-    public Vertex getEnd() {
+    public Point getEnd() {
         return this.end;
     }
 
     /**
      *
-     * @param v The new end {@link Vertex} of the river
+     * @param v The new end {@link Point} of the river
      */
-    public void setEnd(Vertex v) {
+    public void setEnd(Point v) {
         this.end = v;
     }
 
@@ -109,7 +109,7 @@ public class River extends TiledGeography implements IHumidity {
      *
      * @return Gets all the vertices in this river
      */
-    public List<Vertex> getVertices() {
+    public List<Point> getVertices() {
         return new ArrayList<>(this.riverGraph.vertexSet());
     }
 
@@ -118,9 +118,9 @@ public class River extends TiledGeography implements IHumidity {
      * @param path The {@link Path} to add to the river
      * @param tiles The 2 {@link Tile}s that this path belong to
      */
-    public void addPath(Path path, Vertex start, List<Tile> tiles) {
-        Vertex v1 = path.getV1();
-        Vertex v2 = path.getV2();
+    public void addPath(Path path, Point start, List<Tile> tiles) {
+        Point v1 = path.getP1();
+        Point v2 = path.getP2();
 
         if(!v1.equals(start) && !v2.equals(start))
             throw new IllegalArgumentException("Given vertex is not a part of the path");
@@ -128,7 +128,7 @@ public class River extends TiledGeography implements IHumidity {
         path.setWidth(this.flow);
         path.setType(PathType.RIVER);
 
-        Vertex end = v1.equals(start) ? v2 : v1;
+        Point end = v1.equals(start) ? v2 : v1;
 
         this.riverGraph.addVertex(start);
         this.riverGraph.addVertex(end);
@@ -154,20 +154,20 @@ public class River extends TiledGeography implements IHumidity {
 
         Graphs.addGraph(this.riverGraph, river.riverGraph);
 
-        Vertex riverEnd = river.end;
+        Point riverEnd = river.end;
 
-        AllDirectedPaths<Vertex, DefaultEdge> allPaths = new AllDirectedPaths<>(this.riverGraph);
-        List<GraphPath<Vertex, DefaultEdge>> graphPaths = allPaths.getAllPaths(riverEnd, this.end, true, null);
+        AllDirectedPaths<Point, DefaultEdge> allPaths = new AllDirectedPaths<>(this.riverGraph);
+        List<GraphPath<Point, DefaultEdge>> graphPaths = allPaths.getAllPaths(riverEnd, this.end, true, null);
 
         // Linear graph so there can only be one path
-        GraphPath<Vertex, DefaultEdge> graphPath = graphPaths.get(0);
+        GraphPath<Point, DefaultEdge> graphPath = graphPaths.get(0);
 
         boolean sameFlow = this.start.contains(riverEnd);
 
         graphPath.getEdgeList().forEach(e -> {
-            Vertex v1 = this.riverGraph.getEdgeSource(e);
-            Vertex v2 = this.riverGraph.getEdgeTarget(e);
-            Path path = this.riverPath.stream().filter(pth -> pth.hasVertex(v1) && pth.hasVertex(v2)).findFirst().get();
+            Point v1 = this.riverGraph.getEdgeSource(e);
+            Point v2 = this.riverGraph.getEdgeTarget(e);
+            Path path = this.riverPath.stream().filter(pth -> pth.hasPoint(v1) && pth.hasPoint(v2)).findFirst().get();
 
             if(!sameFlow)
                 path.addWidth(river.flow);
@@ -176,7 +176,7 @@ public class River extends TiledGeography implements IHumidity {
         });
     }
 
-    public boolean intersect(Vertex vertex) {
+    public boolean intersect(Point vertex) {
         return this.getVertices().contains(vertex);
     }
 

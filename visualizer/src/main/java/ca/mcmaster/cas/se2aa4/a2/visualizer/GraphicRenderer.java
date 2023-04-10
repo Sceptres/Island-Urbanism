@@ -1,11 +1,11 @@
 package ca.mcmaster.cas.se2aa4.a2.visualizer;
 
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.Util;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.mesh.Mesh;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segment;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.segment.Segments;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphicRenderer {
 
@@ -18,13 +18,11 @@ public class GraphicRenderer {
     public void render(Mesh mesh, Graphics2D canvas) {
         canvas.setColor(Color.BLACK);
 
-        Segments debugSegments = new Segments();
+        List<Segment> debugSegments = new ArrayList<>();
 
         // Render polygons
         mesh.getPolygons().forEach(polygon -> {
             if(this.isDebug) {
-                Color color = Util.generateRandomColor(false);
-
                 polygon.getNeighbors().forEach(p -> {
                     // Segment that will be drawn to show neighborhood
                     Segment segment = new Segment(polygon.getCentroid(), p.getCentroid());
@@ -45,19 +43,20 @@ public class GraphicRenderer {
         });
 
         // Render vertices
-        mesh.getNonCentroidVertices().forEach(vertex -> {
+        mesh.getVertices().forEach(vertex -> {
             if(this.isDebug) {
-                vertex.setColor(Color.BLACK);
-                vertex.render(canvas);
+                if(vertex.isCentroid())
+                    vertex.setColor(Color.GRAY);
+                else
+                    vertex.setColor(Color.BLACK);
+
+                vertex.setThickness(3);
             }
+            vertex.render(canvas);
         });
 
         if(this.isDebug) {
             debugSegments.forEach(s -> s.render(canvas));
-            mesh.getCentroidVertices().forEach(vertex -> {
-                vertex.setColor(Color.GRAY);
-                vertex.render(canvas);
-            });
         }
     }
 }

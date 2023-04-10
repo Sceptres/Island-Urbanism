@@ -1,7 +1,10 @@
 package ca.mcmaster.cas.se2aa4.a2.island.geography;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
 import ca.mcmaster.cas.se2aa4.a2.island.path.type.PathType;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
+import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileType;
@@ -12,11 +15,13 @@ import java.util.List;
 public class Land extends TiledGeography {
     private final List<Lake> lakes;
     private final List<River> rivers;
+    private final List<Point> cities;
 
     public Land() {
         super(TileType.LAND);
         this.lakes = new ArrayList<>();
         this.rivers = new ArrayList<>();
+        this.cities = new ArrayList<>();
     }
 
     @Override
@@ -68,15 +73,29 @@ public class Land extends TiledGeography {
 
     /**
      *
+     * @param city The city to add to the land
+     */
+    public void addCity(Point city) {
+        city.setType(PointType.CITY);
+        this.cities.add(city);
+    }
+
+    /**
+     *
+     * @return The cities of this land
+     */
+    public List<Point> getCities() {
+        return new ArrayList<>(this.cities);
+    }
+
+    /**
+     *
      * @return All the unused paths on the land
      */
     public List<Path> getPaths() {
-        return this.tiles.stream()
-                .filter(t -> t.getType().getGroup() == TileGroup.LAND)
-                .flatMap(t -> t.getPaths().stream())
-                .filter(p -> p.getType() == PathType.NONE)
-                .distinct()
-                .toList();
+        List<Tile> tiles = this.tiles.stream().filter(t -> t.getType().getGroup() == TileGroup.LAND).toList();
+        List<Path> paths = Util.getTilePaths(tiles);
+        return paths.stream().filter(p -> p.getType() == PathType.NONE).toList();
     }
 
     @Override

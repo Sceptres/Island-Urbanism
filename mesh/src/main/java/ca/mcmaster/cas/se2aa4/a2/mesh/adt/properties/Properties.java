@@ -37,7 +37,8 @@ public class Properties extends ArrayList<Property> implements Copier<Properties
 
     @Override
     public void copy(Properties properties) {
+        List<Property> propertiesCopy = new ArrayList<>(properties);
         super.clear();
-        this.addAll(properties);
+        this.addAll(propertiesCopy);
     }
 }

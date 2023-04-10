@@ -1,5 +1,6 @@
 package ca.mcmaster.cas.se2aa4.a2.island.tile;
 
+import ca.mcmaster.cas.se2aa4.a2.island.Util;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.IElevation;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.handler.ElevationHandler;
 import ca.mcmaster.cas.se2aa4.a2.island.elevation.profiles.ElevationProfile;
@@ -9,12 +10,12 @@ import ca.mcmaster.cas.se2aa4.a2.island.humidity.profiles.HumidityProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.SoilAbsorptionProfile;
 import ca.mcmaster.cas.se2aa4.a2.island.humidity.soil.profiles.WetSoilAbsorption;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.point.Point;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.configuration.Configurator;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileType;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.polygon.Polygon;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Neighborable;
 import ca.mcmaster.cas.se2aa4.a2.mesh.adt.services.Positionable;
-import ca.mcmaster.cas.se2aa4.a2.mesh.adt.vertex.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
     private final HumidityProfile humidity;
     private final ElevationProfile elevation;
     private final Polygon polygon;
+    private final Point centroid;
     private final List<Path> paths;
     private final List<Tile> neighbors;
 
@@ -38,7 +40,7 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
      * @param paths The list {@link Path} belonging to this tile
      * @param soilAbsorptionProfile The {@link SoilAbsorptionProfile} of this tile
      */
-    public Tile(Polygon polygon, List<Path> paths, SoilAbsorptionProfile soilAbsorptionProfile) {
+    public Tile(Polygon polygon, List<Path> paths, Point centroid, SoilAbsorptionProfile soilAbsorptionProfile) {
         this.polygon = polygon;
         this.neighbors = new Tiles();
         this.paths = new ArrayList<>(paths);
@@ -47,10 +49,11 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
         this.humidity = new HumidityProfile();
         this.elevation = new ElevationProfile();
         this.aquifer = false;
+        this.centroid = centroid;
     }
 
-    public Tile(Polygon polygon, List<Path> paths) {
-        this(polygon, paths, new WetSoilAbsorption());
+    public Tile(Polygon polygon, List<Path> paths, Point centroid) {
+        this(polygon, paths, centroid, new WetSoilAbsorption());
     }
 
     /**
@@ -102,12 +105,16 @@ public final class Tile implements Neighborable<Tile>, Positionable<Double>, IEl
         return new ArrayList<>(this.paths);
     }
 
+    public Point getCentroid() {
+        return this.centroid;
+    }
+
     /**
      *
-     * @return The list of {@link Vertex} that belong to this tile
+     * @return The {@link Point} of this tile
      */
-    public List<Vertex> getVertices() {
-        return this.polygon.getVertices();
+    public List<Point> getPoints() {
+        return Util.getPathPoints(this.paths);
     }
 
     @Override

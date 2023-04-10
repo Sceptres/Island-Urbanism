@@ -2,8 +2,8 @@ package ca.mcmaster.cas.se2aa4.a2.island.hook.hooks;
 
 import ca.mcmaster.cas.se2aa4.a2.island.hook.Hook;
 import ca.mcmaster.cas.se2aa4.a2.island.path.Path;
+import ca.mcmaster.cas.se2aa4.a2.island.point.type.PointType;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.Tile;
-import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileGroup;
 import ca.mcmaster.cas.se2aa4.a2.island.tile.type.TileType;
 
 import java.awt.*;
@@ -13,6 +13,8 @@ public class ElevationMap implements Hook {
     @Override
     public void apply(List<Tile> tiles) {
         tiles.forEach(tile -> {
+            tile.getPoints().forEach(p -> p.setType(PointType.NONE));
+
             if(tile.getType() == TileType.OCEAN) {
                 tile.getPolygon().setColor(Color.BLACK);
             } else {

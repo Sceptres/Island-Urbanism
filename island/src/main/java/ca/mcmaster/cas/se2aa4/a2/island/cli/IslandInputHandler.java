@@ -47,7 +47,8 @@ public class IslandInputHandler {
             Map.entry(SeedOption.OPTION_STR, new SeedOption()),
             Map.entry(SoilAbsorptionProfileOption.OPTION_STR, new SoilAbsorptionProfileOption()),
             Map.entry(BiomeOption.OPTION_STR, new BiomeOption()),
-            Map.entry(HookOption.OPTION_STR, new HookOption())
+            Map.entry(HookOption.OPTION_STR, new HookOption()),
+            Map.entry(CitiesOption.OPTION_STR, new CitiesOption())
     );
 
     /**
@@ -109,16 +110,17 @@ public class IslandInputHandler {
 
         int numAquifers = IslandInputHandler.getNumAquifers(handler);
         int numRivers = IslandInputHandler.getNumRivers(handler);
+        int numCities = IslandInputHandler.getNumCities(handler);
         long seed = IslandInputHandler.getSeed(handler);
         Shape shape = IslandInputHandler.getShapeInput(handler, meshCenter, diagonalLength);
         Biome biome = IslandInputHandler.getBiomeOption(handler);
 
         if(mode.equals("lagoon"))
-            generator = new LagoonIslandGenerator(mesh, shape, biome, seed, numAquifers, numRivers);
+            generator = new LagoonIslandGenerator(mesh, shape, biome, seed, numAquifers, numRivers, numCities);
         else if(mode.equals("random")) {
             int numLakes = IslandInputHandler.getNumLakes(handler);
             AltimeterProfile altimeterProfile = IslandInputHandler.getAltimeterInput(handler);
-            generator = new RandomIslandGenerator(mesh, shape, biome, altimeterProfile, seed, numLakes, numAquifers, numRivers);
+            generator = new RandomIslandGenerator(mesh, shape, biome, altimeterProfile, seed, numLakes, numAquifers, numRivers, numCities);
         } else
             handler.printHelp("Invalid mode: " + mode);
 
@@ -379,5 +381,34 @@ public class IslandInputHandler {
         }
 
         return hook;
+    }
+
+    /**
+     *
+     * @param handler The {@link InputHandler} to extract the number of cities from
+     * @return The number of cities inputted by the user.
+     * @throws IllegalInputException If the user gave an invalid input.
+     */
+    public static int getNumCities(InputHandler handler) throws IllegalInputException {
+        String value = handler.getOptionValue(
+                IslandInputHandler.getIslandOption(CitiesOption.OPTION_STR),
+                CitiesOption.DEFAULT_VALUE
+        );
+
+        int numCities = -1;
+
+        try {
+            numCities = Integer.parseInt(value);
+
+            if(numCities < 0)
+                throw new IllegalArgumentException();
+        } catch(NumberFormatException e) {
+            String message = String.format("Invalid number of cities %s!", value);
+            handler.printHelp(message);
+        } catch(IllegalArgumentException e) {
+            handler.printHelp("Cannot have a negative number of cities!");
+        }
+
+        return numCities;
     }
 }

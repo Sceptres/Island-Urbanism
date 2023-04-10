@@ -59,6 +59,7 @@ Island Generator options include:
 11. -sed, --seed <seed>                               The seed of the island to generate. Generator will generate a random one if none are given.
 12. -b, --biomes <biomes>                             The biomes of the island to generate. Options are `tropical` and `temperate`. Generator will generate a `tropical` island if none is given.
 13. -H, --hook  <hook>                                Sets the hook to run after the generation of the island. Current options are `moisture` and `elevation`.
+14. -c, --cities <# of cities>                        Sets the number of cities to generate into the island.
 ```
 mosser@azrael A2 % cd island 
 mosser@azrael island % java -jar island.jar -i ../generator/sample.mesh -o island.mesh -m lagoon
@@ -69,6 +70,12 @@ mosser@azrael island % ls -lh island.mesh
 -rw-r--r--  1 mosser  staff    29K 29 Jan 10:52 sample.mesh
 mosser@azrael island % 
 ```
+
+Cities generated are connected through a star network. The black lines represents the roads between the cities. The dark grey
+dots represent the cities. Roads over bodies of water are ignored unless it is absolutely necessary. The elevation profile
+of the island is also taken into account to find the cheapest path between the cities. The red city represents the
+capital city (ie the center of the star network). The capital city is set as the largest generated city. The number of 
+cities to generate is set through the `--cities` option.
 
 ### Visualizer
 
