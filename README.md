@@ -1,6 +1,12 @@
 # Assignment A4: Urbanism
   - Abdallah Alqashqish [alqashqa@mcmaster.ca]
 
+# Authorship
+Contributors and the features they worked on
+* Abdallah: 1, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+* Beshoy: 1, 3, 4, 5, 7, 8, 9, 11, 12, 13, 15, 19
+* Omar: 2, 4, 10, 16, 18, 20, 21
+
 ## How to run the product
 
 _This section needs to be edited to reflect how the user can interact with thefeature released in your project_
